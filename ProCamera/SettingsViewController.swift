@@ -13,7 +13,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     private let settings = [
         "Grid",
         "Zoom",
-        "Sound"
+        "Sound",
+        "Geo Tagging",
+        "Quality",
+        "In App Purchase",
+        "Mode"
     ]
 
     @IBOutlet weak var tableView: UITableView!
@@ -35,9 +39,17 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCellWithIdentifier("settingCell") as SettingTableViewCell
-        cell.settingName.text = settings[indexPath.row]
-        return cell
+        if indexPath.row < 4 {
+            var cell = tableView.dequeueReusableCellWithIdentifier("settingBoolCell") as SettingBoolTableViewCell
+            cell.switchBtn.setOn(true, animated: true)
+            cell.settingName.text = settings[indexPath.row]
+            return cell
+        } else {
+            var cell = tableView.dequeueReusableCellWithIdentifier("settingOptionsCell") as SettingOptionsTableViewCell
+            cell.settingName.text = settings[indexPath.row]
+            cell.optionVal.text = "Default" //place holder
+            return cell
+        }
     }
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return settings.count

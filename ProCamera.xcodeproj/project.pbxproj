@@ -14,9 +14,11 @@
 		AF0FEFC61AACC3E2000C8F6E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF0FEFC41AACC3E2000C8F6E /* LaunchScreen.xib */; };
 		AF0FEFD21AACC3E2000C8F6E /* ProCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFD11AACC3E2000C8F6E /* ProCameraTests.swift */; };
 		AF0FEFDC1AACCBC7000C8F6E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFDB1AACCBC7000C8F6E /* SettingsViewController.swift */; };
-		AF0FEFDF1AACCED6000C8F6E /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFDE1AACCED6000C8F6E /* SettingTableViewCell.swift */; };
+		AF0FEFDF1AACCED6000C8F6E /* SettingBoolTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFDE1AACCED6000C8F6E /* SettingBoolTableViewCell.swift */; };
 		AF0FEFE21AACD2C6000C8F6E /* PictureStyleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE11AACD2C6000C8F6E /* PictureStyleViewController.swift */; };
 		AF0FEFE41AACD37E000C8F6E /* PictureStyleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE31AACD37E000C8F6E /* PictureStyleTableViewCell.swift */; };
+		AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */; };
+		AF0FEFE81AAD1424000C8F6E /* SettingOptionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,9 +43,11 @@
 		AF0FEFD01AACC3E2000C8F6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF0FEFD11AACC3E2000C8F6E /* ProCameraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProCameraTests.swift; sourceTree = "<group>"; };
 		AF0FEFDB1AACCBC7000C8F6E /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		AF0FEFDE1AACCED6000C8F6E /* SettingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
+		AF0FEFDE1AACCED6000C8F6E /* SettingBoolTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingBoolTableViewCell.swift; sourceTree = "<group>"; };
 		AF0FEFE11AACD2C6000C8F6E /* PictureStyleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureStyleViewController.swift; sourceTree = "<group>"; };
 		AF0FEFE31AACD37E000C8F6E /* PictureStyleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureStyleTableViewCell.swift; sourceTree = "<group>"; };
+		AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetTableViewCell.swift; sourceTree = "<group>"; };
+		AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingOptionsTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +93,6 @@
 				AF0FEFDD1AACCE33000C8F6E /* ViewControllers */,
 				AF0FEFBB1AACC3E2000C8F6E /* AppDelegate.swift */,
 				AF0FEFBF1AACC3E2000C8F6E /* Main.storyboard */,
-				AF0FEFE31AACD37E000C8F6E /* PictureStyleTableViewCell.swift */,
 				AF0FEFC21AACC3E2000C8F6E /* Images.xcassets */,
 				AF0FEFC41AACC3E2000C8F6E /* LaunchScreen.xib */,
 				AF0FEFB91AACC3E2000C8F6E /* Supporting Files */,
@@ -135,7 +138,10 @@
 		AF0FEFE01AACCED9000C8F6E /* TableViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				AF0FEFDE1AACCED6000C8F6E /* SettingTableViewCell.swift */,
+				AF0FEFE31AACD37E000C8F6E /* PictureStyleTableViewCell.swift */,
+				AF0FEFDE1AACCED6000C8F6E /* SettingBoolTableViewCell.swift */,
+				AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */,
+				AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */,
 			);
 			name = TableViewCell;
 			sourceTree = "<group>";
@@ -243,7 +249,9 @@
 				AF0FEFBE1AACC3E2000C8F6E /* MainViewController.swift in Sources */,
 				AF0FEFE21AACD2C6000C8F6E /* PictureStyleViewController.swift in Sources */,
 				AF0FEFBC1AACC3E2000C8F6E /* AppDelegate.swift in Sources */,
-				AF0FEFDF1AACCED6000C8F6E /* SettingTableViewCell.swift in Sources */,
+				AF0FEFE81AAD1424000C8F6E /* SettingOptionsTableViewCell.swift in Sources */,
+				AF0FEFDF1AACCED6000C8F6E /* SettingBoolTableViewCell.swift in Sources */,
+				AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */,
 				AF0FEFE41AACD37E000C8F6E /* PictureStyleTableViewCell.swift in Sources */,
 				AF0FEFDC1AACCBC7000C8F6E /* SettingsViewController.swift in Sources */,
 			);
@@ -439,6 +447,7 @@
 				AF0FEFD71AACC3E2000C8F6E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AF0FEFD81AACC3E2000C8F6E /* Build configuration list for PBXNativeTarget "ProCameraTests" */ = {
 			isa = XCConfigurationList;
@@ -447,6 +456,7 @@
 				AF0FEFDA1AACC3E2000C8F6E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -1,5 +1,5 @@
 //
-//  PictureStyleTableViewCell.swift
+//  PresetTableViewCell.swift
 //  ProCamera
 //
 //  Created by Hao Wang on 3/8/15.
@@ -8,9 +8,9 @@
 
 import UIKit
 
-class PictureStyleTableViewCell: UITableViewCell {
+class PresetTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var presetName: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

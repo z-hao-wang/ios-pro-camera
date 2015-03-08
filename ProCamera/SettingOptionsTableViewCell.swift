@@ -1,5 +1,5 @@
 //
-//  SettingTableViewCell.swift
+//  SettingOptionsTableViewCell.swift
 //  ProCamera
 //
 //  Created by Hao Wang on 3/8/15.
@@ -8,9 +8,9 @@
 
 import UIKit
 
-class SettingTableViewCell: UITableViewCell {
+class SettingOptionsTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var switchBtn: UISwitch!
+    @IBOutlet weak var optionVal: UILabel!
     @IBOutlet weak var settingName: UILabel!
     override func awakeFromNib() {
         super.awakeFromNib()

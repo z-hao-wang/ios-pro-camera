@@ -10,7 +10,7 @@ import UIKit
 
 class PictureStyleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    let pictureStyles = [""]
+    let pictureStyles = ["Sharpness", "Contrast", "Saturation", "Color Tone"]
 
     @IBOutlet weak var tableView: UITableView!
     @IBAction func onClose(sender: UIButton) {
@@ -41,11 +41,33 @@ class PictureStyleViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCellWithIdentifier("pictureStyleCell") as PictureStyleTableViewCell
-        return cell
+        if indexPath.section == 0 {
+            var cell = tableView.dequeueReusableCellWithIdentifier("pictureStyleCell") as PictureStyleTableViewCell
+            cell.nameLabel.text = pictureStyles[indexPath.row]
+            return cell
+        } else {
+            //handle presets
+            var cell = tableView.dequeueReusableCellWithIdentifier("presetCell") as PresetTableViewCell
+            cell.presetName.text = "Default" // Placeholder
+            return cell
+        }
+        
+    }
+
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
     }
     
-
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Picture Style"
+        case 1:
+            return "Presets"
+        default:
+            return ""
+        }
+    }
     /*
     // MARK: - Navigation
 

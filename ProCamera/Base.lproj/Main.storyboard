@@ -55,16 +55,43 @@
                                                 </label>
                                                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Dey-v1-EZf">
                                                     <rect key="frame" x="106" y="5" width="200" height="31"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="196" id="abz-Uz-Um1"/>
+                                                    </constraints>
                                                 </slider>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="ctj-De-Cv9" firstAttribute="leading" secondItem="30R-6h-L8F" secondAttribute="leadingMargin" constant="13" id="5Fa-AD-2D3"/>
-                                                <constraint firstItem="Dey-v1-EZf" firstAttribute="leading" secondItem="ctj-De-Cv9" secondAttribute="trailing" constant="45" id="jlY-3p-ZtT"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Dey-v1-EZf" secondAttribute="trailing" constant="8" id="oTs-RA-qp4"/>
                                                 <constraint firstItem="ctj-De-Cv9" firstAttribute="top" secondItem="30R-6h-L8F" secondAttribute="topMargin" constant="3" id="qhJ-2N-Lvx"/>
                                                 <constraint firstItem="Dey-v1-EZf" firstAttribute="top" secondItem="30R-6h-L8F" secondAttribute="topMargin" constant="-3" id="t9g-Ql-QIY"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="nameLabel" destination="ctj-De-Cv9" id="aGS-Oh-I9x"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="presetCell" id="r2h-9t-IQc" customClass="PresetTableViewCell" customModule="ProCamera" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="r2h-9t-IQc" id="ovC-fL-yLm">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zKK-7e-2O4">
+                                                    <rect key="frame" x="23" y="11" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="zKK-7e-2O4" firstAttribute="top" secondItem="ovC-fL-yLm" secondAttribute="topMargin" constant="3" id="Ydk-7d-2oD"/>
+                                                <constraint firstItem="zKK-7e-2O4" firstAttribute="leading" secondItem="ovC-fL-yLm" secondAttribute="leadingMargin" constant="15" id="fwc-nh-65z"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="presetName" destination="zKK-7e-2O4" id="IF0-5B-sdQ"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -233,7 +260,7 @@
                                 <rect key="frame" x="0.0" y="44" width="320" height="524"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="settingCell" id="rQt-mV-7x5" customClass="SettingTableViewCell" customModule="ProCamera" customModuleProvider="target">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="settingBoolCell" id="rQt-mV-7x5" customClass="SettingBoolTableViewCell" customModule="ProCamera" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rQt-mV-7x5" id="OfV-f2-WHp">
@@ -259,6 +286,45 @@
                                         <connections>
                                             <outlet property="settingName" destination="Rpa-FZ-ycJ" id="kMf-zg-HBR"/>
                                             <outlet property="switchBtn" destination="LGc-Lp-SxJ" id="gDF-IW-2PZ"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="settingOptionsCell" id="vNt-Uh-dGt" customClass="SettingOptionsTableViewCell" customModule="ProCamera" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vNt-Uh-dGt" id="Yyy-hV-AYD">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="clg-Xm-qJN">
+                                                    <rect key="frame" x="20" y="11" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sze-wJ-6QM">
+                                                    <rect key="frame" x="252" y="12" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=">" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PvZ-W9-S7b">
+                                                    <rect key="frame" x="298" y="11" width="10" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Sze-wJ-6QM" firstAttribute="top" secondItem="Yyy-hV-AYD" secondAttribute="topMargin" constant="4" id="C6Y-WW-gZg"/>
+                                                <constraint firstItem="clg-Xm-qJN" firstAttribute="top" secondItem="Yyy-hV-AYD" secondAttribute="topMargin" constant="3" id="OpT-mN-Mqp"/>
+                                                <constraint firstItem="clg-Xm-qJN" firstAttribute="leading" secondItem="Yyy-hV-AYD" secondAttribute="leadingMargin" constant="12" id="fff-V3-fnR"/>
+                                                <constraint firstItem="PvZ-W9-S7b" firstAttribute="top" secondItem="Yyy-hV-AYD" secondAttribute="topMargin" constant="3" id="poS-6a-hKI"/>
+                                                <constraint firstItem="PvZ-W9-S7b" firstAttribute="leading" secondItem="Sze-wJ-6QM" secondAttribute="trailing" constant="4" id="z8R-Fn-9Ge"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="PvZ-W9-S7b" secondAttribute="trailing" constant="4" id="zQM-ZZ-Ofi"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="optionVal" destination="Sze-wJ-6QM" id="cOk-9B-Sgo"/>
+                                            <outlet property="settingName" destination="clg-Xm-qJN" id="HrU-dB-SrT"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
