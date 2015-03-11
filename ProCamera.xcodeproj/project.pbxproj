@@ -20,6 +20,7 @@
 		AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */; };
 		AF0FEFE81AAD1424000C8F6E /* SettingOptionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */; };
 		AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */; };
+		AF6469B31AAFF7CB0078EA74 /* AVCoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetTableViewCell.swift; sourceTree = "<group>"; };
 		AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingOptionsTableViewCell.swift; sourceTree = "<group>"; };
 		AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCoreViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +137,7 @@
 				AF0FEFE11AACD2C6000C8F6E /* PictureStyleViewController.swift */,
 				AF0FEFDB1AACCBC7000C8F6E /* SettingsViewController.swift */,
 				AF0FEFBD1AACC3E2000C8F6E /* MainViewController.swift */,
+				AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -255,6 +258,7 @@
 				AF0FEFBC1AACC3E2000C8F6E /* AppDelegate.swift in Sources */,
 				AF0FEFE81AAD1424000C8F6E /* SettingOptionsTableViewCell.swift in Sources */,
 				AF0FEFDF1AACCED6000C8F6E /* SettingBoolTableViewCell.swift in Sources */,
+				AF6469B31AAFF7CB0078EA74 /* AVCoreViewController.swift in Sources */,
 				AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */,
 				AF0FEFE41AACD37E000C8F6E /* PictureStyleTableViewCell.swift in Sources */,
 				AF0FEFDC1AACCBC7000C8F6E /* SettingsViewController.swift in Sources */,
