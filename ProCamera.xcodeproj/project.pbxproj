@@ -19,6 +19,7 @@
 		AF0FEFE41AACD37E000C8F6E /* PictureStyleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE31AACD37E000C8F6E /* PictureStyleTableViewCell.swift */; };
 		AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */; };
 		AF0FEFE81AAD1424000C8F6E /* SettingOptionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */; };
+		AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 		AF0FEFE31AACD37E000C8F6E /* PictureStyleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PictureStyleTableViewCell.swift; sourceTree = "<group>"; };
 		AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetTableViewCell.swift; sourceTree = "<group>"; };
 		AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingOptionsTableViewCell.swift; sourceTree = "<group>"; };
+		AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +74,7 @@
 		AF0FEFAD1AACC3E2000C8F6E = {
 			isa = PBXGroup;
 			children = (
+				AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */,
 				AF0FEFB81AACC3E2000C8F6E /* ProCamera */,
 				AF0FEFCE1AACC3E2000C8F6E /* ProCameraTests */,
 				AF0FEFB71AACC3E2000C8F6E /* Products */,
@@ -379,6 +383,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ProCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -389,6 +394,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = ProCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
