@@ -28,27 +28,21 @@ enum whiteBalanceMode {
     }
 }
 
+
 class AVCoreViewController: UIViewController {
 
-    var initialized = false
-    var capturedImage: UIImageView!
-    var videoDevice: AVCaptureDevice!
-    var captureSession: AVCaptureSession!
-    var stillImageOutput: AVCaptureStillImageOutput!
-    var previewLayer: AVCaptureVideoPreviewLayer!
+    private var initialized = false
+    private var capturedImage: UIImageView!
+    private var videoDevice: AVCaptureDevice!
+    private var captureSession: AVCaptureSession!
+    private var stillImageOutput: AVCaptureStillImageOutput!
+    private var previewLayer: AVCaptureVideoPreviewLayer!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    //some default settings
+    let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
+    let EXPOSURE_MINIMUM_DURATION:Float64 = 1.0/1000.0
     
-    override func viewWillAppear(animated: Bool) {
+    func initialize() {
         if !initialized {
             captureSession = AVCaptureSession()
             captureSession.sessionPreset = AVCaptureSessionPresetPhoto
@@ -77,6 +71,18 @@ class AVCoreViewController: UIViewController {
         
     }
     
+    func lockConfig(complete: () -> ()) {
+        if initialized {
+            var error: NSError?
+            videoDevice.lockForConfiguration(&error)
+            if error == nil {
+                complete()
+                videoDevice.unlockForConfiguration()
+            }
+            println("lockForConfiguration Failed \(error)")
+        }
+    }
+    
     func setWhiteBalanceMode(mode: whiteBalanceMode) {
         var wbMode: AVCaptureWhiteBalanceMode
         switch (mode) {
@@ -90,15 +96,12 @@ class AVCoreViewController: UIViewController {
             //means not auto
             changeTemperature(Float(temperatureValue))
         }
-        var error: NSError?
-        videoDevice.lockForConfiguration(&error)
-        if error == nil {
-            if videoDevice.isWhiteBalanceModeSupported(wbMode) {
+        lockConfig { () -> () in
+            if self.videoDevice.isWhiteBalanceModeSupported(wbMode) {
                 self.videoDevice.whiteBalanceMode = wbMode;
             } else {
                 println("White balance mode is not supported");
             }
-            videoDevice.unlockForConfiguration()
         }
     }
     
@@ -129,17 +132,40 @@ class AVCoreViewController: UIViewController {
     
     //Set the white balance gain
     func setWhiteBalanceGains(gains: AVCaptureWhiteBalanceGains) {
-        var error: NSError?
-        videoDevice.lockForConfiguration(&error)
-        if (error == nil) {
-            
-            videoDevice.setWhiteBalanceModeLockedWithDeviceWhiteBalanceGains(normalizedGains(gains), completionHandler: nil)
-            videoDevice.unlockForConfiguration()
-        } else {
-            println(error);
+        lockConfig { () -> () in
+            self.videoDevice.setWhiteBalanceModeLockedWithDeviceWhiteBalanceGains(self.normalizedGains(gains), completionHandler: nil)
         }
     }
     
+    // Available modes:
+    // .Locked .AutoExpose .ContinuousAutoExposure .Custom
+    func changeExposureMode(mode: AVCaptureExposureMode) {
+        lockConfig { () -> () in
+            if self.videoDevice.isExposureModeSupported(mode) {
+                self.videoDevice.exposureMode = mode
+            }
+        }
+    }
+    
+    func changeExposureDuration(value: Float) {
+        let p = Float64(pow(value, EXPOSURE_DURATION_POWER)) // Apply power function to expand slider's low-end range
+        let minDurationSeconds = Float64(max(CMTimeGetSeconds(videoDevice.activeFormat.minExposureDuration), EXPOSURE_MINIMUM_DURATION))
+        let maxDurationSeconds = Float64(CMTimeGetSeconds(self.videoDevice.activeFormat.maxExposureDuration))
+        let newDurationSeconds = Float64(p * (maxDurationSeconds - minDurationSeconds))// + minDurationSeconds // Scale from 0-1 slider range to actual duration
+        if (videoDevice.exposureMode == .Custom) {
+            lockConfig { () -> () in
+                self.videoDevice.setExposureModeCustomWithDuration(CMTimeMakeWithSeconds(Float64(newDurationSeconds), 1000*1000*1000), ISO: AVCaptureISOCurrent, completionHandler: nil)
+            }
+        }
+    }
+    
+    func changeISO(value:Float) {
+        lockConfig { () -> () in
+            self.videoDevice.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: value, completionHandler: nil)
+        }
+    }
+    
+    //save photo to camera roll
     func takePhoto() {
         if let videoConnection = stillImageOutput!.connectionWithMediaType(AVMediaTypeVideo) {
             videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait

@@ -29,6 +29,11 @@ class MainViewController: AVCoreViewController {
         
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        super.initialize()
+    }
+    
     override func postInitilize() {
         super.postInitilize()
         previewView.layer.insertSublayer(previewLayer, atIndex: 0)
