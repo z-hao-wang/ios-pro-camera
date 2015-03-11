@@ -70,17 +70,18 @@ class MainViewController: UIViewController {
                     
                     captureSession.startRunning()
                 }
+                initialized = true
             }
-            initialized = true
         }
     }
 
     override func viewDidAppear(animated: Bool) {
-        previewLayer.frame = previewView.bounds
-        
-        //tmp
-        setWhiteBalanceMode(.Temperature(5000))
-        
+        if initialized {
+            previewLayer.frame = previewView.bounds
+            
+            //tmp
+            setWhiteBalanceMode(.Temperature(5000))
+        }
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -120,10 +121,14 @@ class MainViewController: UIViewController {
     }
     
     func changeTemperature(value: Float) {
+        
         var mappedValue = value * 5000.0 + 3000.0 //map 0.0 - 1.0 to 3000 - 8000
         println("wb=\(value)")
         var temperatureAndTint = AVCaptureWhiteBalanceTemperatureAndTintValues(temperature: mappedValue, tint: 0.0)
-        setWhiteBalanceGains(videoDevice.deviceWhiteBalanceGainsForTemperatureAndTintValues(temperatureAndTint))
+        if initialized {
+            setWhiteBalanceGains(videoDevice.deviceWhiteBalanceGainsForTemperatureAndTintValues(temperatureAndTint))
+        }
+        
     }
     
     func normalizedGains(gains:AVCaptureWhiteBalanceGains) -> AVCaptureWhiteBalanceGains {
