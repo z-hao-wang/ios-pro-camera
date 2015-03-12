@@ -14,10 +14,10 @@ import AssetsLibrary
 
 class MainViewController: AVCoreViewController {
     
-    @IBOutlet weak var flashBtn: UIButton!
-    
     private let whiteBalanceModes = ["Auto", "Sunny", "Cloudy", "Manual"]
     
+    @IBOutlet weak var albumButton: UIImageView!
+    @IBOutlet weak var flashBtn: UIButton!
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
     
@@ -47,6 +47,7 @@ class MainViewController: AVCoreViewController {
             
             //tmp
             setWhiteBalanceMode(.Temperature(5000))
+            changeExposureMode(.Custom)
         }
     }
     
@@ -73,19 +74,28 @@ class MainViewController: AVCoreViewController {
         }
     }
     
+    @IBAction func didMoveShutterSpeed(sender: UISlider) {
+        changeExposureDuration(sender.value)
+    }
     @IBAction func didMoveWhiteBalance(sender: UISlider) {
         //Todo move this to different
         let value = sender.value
         println(value)
         changeTemperature(value)
     }
-    
-    
+    @IBAction func didMoveEV(sender: UISlider) {
+        changeEV(sender.value)
+    }
 
     @IBAction func didTouchDownShutter(sender: UIButton) {
         takePhoto()
+        beforeSavePhoto()
     }
     
+    override func beforeSavePhoto() {
+        super.beforeSavePhoto()
+        albumButton.image = lastImage
+    }
 
 }
 

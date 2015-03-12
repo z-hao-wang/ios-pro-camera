@@ -28,6 +28,11 @@ enum whiteBalanceMode {
     }
 }
 
+enum ISOMode {
+    case Auto
+    case Custom
+}
+
 
 class AVCoreViewController: UIViewController {
 
@@ -38,8 +43,11 @@ class AVCoreViewController: UIViewController {
     private var stillImageOutput: AVCaptureStillImageOutput!
     var previewLayer: AVCaptureVideoPreviewLayer!
     var flashOn = false
+    var lastImage: UIImage?
+    var isoMode: ISOMode = ISOMode.Auto
+    var exposureValue: Float = 0.5 // EV
     
-    //some default settings
+    // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
     let EXPOSURE_MINIMUM_DURATION:Float64 = 1.0/1000.0
     
@@ -79,8 +87,9 @@ class AVCoreViewController: UIViewController {
             if error == nil {
                 complete()
                 videoDevice.unlockForConfiguration()
+            } else {
+                println("lockForConfiguration Failed \(error)")
             }
-            println("lockForConfiguration Failed \(error)")
         }
     }
     
@@ -152,17 +161,60 @@ class AVCoreViewController: UIViewController {
         let p = Float64(pow(value, EXPOSURE_DURATION_POWER)) // Apply power function to expand slider's low-end range
         let minDurationSeconds = Float64(max(CMTimeGetSeconds(videoDevice.activeFormat.minExposureDuration), EXPOSURE_MINIMUM_DURATION))
         let maxDurationSeconds = Float64(CMTimeGetSeconds(self.videoDevice.activeFormat.maxExposureDuration))
-        let newDurationSeconds = Float64(p * (maxDurationSeconds - minDurationSeconds))// + minDurationSeconds // Scale from 0-1 slider range to actual duration
+        let newDurationSeconds = Float64(p * (maxDurationSeconds - minDurationSeconds)) + minDurationSeconds // Scale from 0-1 slider range to actual duration
+
         if (videoDevice.exposureMode == .Custom) {
             lockConfig { () -> () in
-                self.videoDevice.setExposureModeCustomWithDuration(CMTimeMakeWithSeconds(Float64(newDurationSeconds), 1000*1000*1000), ISO: AVCaptureISOCurrent, completionHandler: nil)
+                var newISO = AVCaptureISOCurrent
+                if self.isoMode == .Auto {
+                    // Going to calculate the correct exposure EV
+                    // Keep EV stay the same
+                    // Need to calculate the ISO based on current image exposure
+                    // exposureTime * ISO = EV
+                    // ISO from 29 to 464
+                    // exposureTime from 1/8000 to 1/2
+                    // Let's assume EV = 14.45
+                    
+                    //self.exposureValue = 14.45
+                    newISO = self.capISO(Float(self.exposureValue) / Float(newDurationSeconds))
+                    println("iso=\(newISO) expo=\(newDurationSeconds)")
+                }
+                let newExposureTime = CMTimeMakeWithSeconds(Float64(newDurationSeconds), 1000*1000*1000)
+                self.videoDevice.setExposureModeCustomWithDuration(newExposureTime, ISO: newISO, completionHandler: nil)
             }
         }
     }
     
+    func changeEV(value: Float) {
+        exposureValue = value * 232.0
+    }
+    
+    func capISO(value: Float) -> Float {
+        if value > self.videoDevice.activeFormat.maxISO{
+            return self.videoDevice.activeFormat.maxISO
+        } else if value < self.videoDevice.activeFormat.minISO{
+            return self.videoDevice.activeFormat.minISO
+        }
+        return value
+    }
+    
+    func calcISOFromNormalizedValue(value: Float) -> Float {
+        var _value = value
+        if _value > 1.0 {
+            _value = 1.0
+        }
+        //map it to the proper iso value
+        let minimumValue = self.videoDevice.activeFormat.minISO
+        let maximumValue = self.videoDevice.activeFormat.maxISO
+        let newValue = _value * (maximumValue - minimumValue) + minimumValue
+        return newValue
+    }
+    
+    //input value from 0.0 to 1.0
     func changeISO(value: Float) {
+        let newValue = calcISOFromNormalizedValue(value)
         lockConfig { () -> () in
-            self.videoDevice.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: value, completionHandler: nil)
+            self.videoDevice.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: newValue, completionHandler: nil)
         }
     }
     
@@ -180,12 +232,22 @@ class AVCoreViewController: UIViewController {
                     var dataProvider = CGDataProviderCreateWithCFData(imageData)
                     var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
                     
-                    var image = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
+                    self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
+                    self.beforeSavePhoto()
                     //save to camera roll
-                    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+                    UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
+                    self.postSavePhoto()
                 }
             })
         }
+    }
+    
+    func beforeSavePhoto() {
+        
+    }
+    
+    func postSavePhoto() {
+        
     }
     
 

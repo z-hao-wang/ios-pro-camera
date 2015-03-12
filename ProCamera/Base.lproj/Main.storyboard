@@ -139,10 +139,10 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2uy-cL-gaJ">
-                                        <rect key="frame" x="8" y="33" width="60" height="30"/>
+                                        <rect key="frame" x="81" y="10" width="42" height="24"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="30" id="T26-9y-xKa"/>
-                                            <constraint firstAttribute="width" constant="60" id="Xm7-L2-dkm"/>
+                                            <constraint firstAttribute="height" constant="24" id="T26-9y-xKa"/>
+                                            <constraint firstAttribute="width" constant="42" id="Xm7-L2-dkm"/>
                                         </constraints>
                                         <state key="normal" image="pictureStyleBtn">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -164,6 +164,10 @@
                                             <segue destination="XOq-bW-hiy" kind="modal" identifier="settingsSegue" id="ZBg-EU-SQe"/>
                                         </connections>
                                     </button>
+                                    <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nma-9s-AJf">
+                                        <rect key="frame" x="8" y="23" width="76" height="63"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -171,10 +175,10 @@
                                     <constraint firstAttribute="trailing" secondItem="GCK-0n-4HT" secondAttribute="trailing" constant="8" id="BRF-H2-rsK"/>
                                     <constraint firstItem="GCK-0n-4HT" firstAttribute="top" secondItem="e3K-PD-94R" secondAttribute="top" constant="23" id="Ncq-eu-6Q1"/>
                                     <constraint firstItem="Y4Y-0I-brS" firstAttribute="top" secondItem="e3K-PD-94R" secondAttribute="top" constant="10" id="X8l-GK-ISB"/>
-                                    <constraint firstAttribute="bottom" secondItem="2uy-cL-gaJ" secondAttribute="bottom" constant="33" id="iCk-3i-P4S"/>
-                                    <constraint firstItem="2uy-cL-gaJ" firstAttribute="leading" secondItem="e3K-PD-94R" secondAttribute="leading" constant="8" id="mg6-kx-wr7"/>
+                                    <constraint firstAttribute="bottom" secondItem="2uy-cL-gaJ" secondAttribute="bottom" constant="62" id="iCk-3i-P4S"/>
+                                    <constraint firstItem="2uy-cL-gaJ" firstAttribute="leading" secondItem="e3K-PD-94R" secondAttribute="leading" constant="81" id="mg6-kx-wr7"/>
                                     <constraint firstAttribute="height" constant="96" id="oIB-2A-27F"/>
-                                    <constraint firstItem="2uy-cL-gaJ" firstAttribute="top" secondItem="e3K-PD-94R" secondAttribute="top" constant="33" id="r0x-NC-QdU"/>
+                                    <constraint firstItem="2uy-cL-gaJ" firstAttribute="top" secondItem="e3K-PD-94R" secondAttribute="top" constant="10" id="r0x-NC-QdU"/>
                                     <constraint firstAttribute="centerX" secondItem="Y4Y-0I-brS" secondAttribute="centerX" constant="1" id="w9Y-RG-Xue"/>
                                     <constraint firstAttribute="bottom" secondItem="Y4Y-0I-brS" secondAttribute="bottom" constant="10" id="yyb-4r-yTZ"/>
                                 </constraints>
@@ -183,7 +187,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="472"/>
                                 <subviews>
                                     <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="5bU-FH-n8F" userLabel="WB Temperature">
-                                        <rect key="frame" x="11" y="86" width="267" height="31"/>
+                                        <rect key="frame" x="22" y="60" width="267" height="31"/>
                                         <connections>
                                             <action selector="didMoveWhiteBalance:" destination="BYZ-38-t0r" eventType="valueChanged" id="z02-0S-XgH"/>
                                         </connections>
@@ -197,8 +201,20 @@
                                             <action selector="didPressFlash:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Qsq-Kl-aCy"/>
                                         </connections>
                                     </button>
+                                    <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Smt-WG-miJ" userLabel="Shutter Speed">
+                                        <rect key="frame" x="22" y="120" width="262" height="31"/>
+                                        <connections>
+                                            <action selector="didMoveShutterSpeed:" destination="BYZ-38-t0r" eventType="valueChanged" id="3o9-Jh-or6"/>
+                                        </connections>
+                                    </slider>
+                                    <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="74U-5l-XTD">
+                                        <rect key="frame" x="27" y="351" width="267" height="31"/>
+                                        <connections>
+                                            <action selector="didMoveEV:" destination="BYZ-38-t0r" eventType="valueChanged" id="T4Y-07-OpQ"/>
+                                        </connections>
+                                    </slider>
                                 </subviews>
-                                <color key="backgroundColor" red="0.43598882299270075" green="0.87807937956204385" blue="0.7271897810218978" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -214,6 +230,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="albumButton" destination="nma-9s-AJf" id="5GV-12-xmY"/>
                         <outlet property="flashBtn" destination="NXp-X9-v4V" id="ZdO-vg-06y"/>
                         <outlet property="previewView" destination="Wkj-1h-woa" id="6yc-fZ-3Mf"/>
                         <outlet property="whiteBalanceSlider" destination="5bU-FH-n8F" id="Cyv-PJ-4Ur"/>
@@ -221,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="694" y="385"/>
+            <point key="canvasLocation" x="704" y="387"/>
         </scene>
         <!--Settings-->
         <scene sceneID="1MU-oK-Amz">
@@ -378,6 +395,57 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bCC-He-2CX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-246" y="387"/>
+        </scene>
+        <!--Camera roll-->
+        <scene sceneID="Uh3-cs-ARZ">
+            <objects>
+                <viewController id="muB-cS-t8r" customClass="CameraRollViewController" customModule="ProCamera" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="rud-7E-cgC"/>
+                        <viewControllerLayoutGuide type="bottom" id="WL8-Dw-GIs"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="16T-fz-eAb">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Camera roll" id="fBi-uW-saX">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="EaV-aE-iGv">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ikh-nO-9tP">
+                                <rect key="frame" x="-23" y="-15" width="71" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="onClose:" destination="muB-cS-t8r" eventType="touchUpInside" id="jMX-Z2-jBe"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NSj-1w-Poj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="365" y="1107"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="54w-17-4Im">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="UdI-Ij-diZ" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="yZV-7A-kPb"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="1WY-HJ-xEC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="muB-cS-t8r" kind="relationship" relationship="rootViewController" id="Y7t-QD-NSn"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="z7n-E3-rui" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-167" y="1107"/>
         </scene>
     </scenes>
     <resources>
