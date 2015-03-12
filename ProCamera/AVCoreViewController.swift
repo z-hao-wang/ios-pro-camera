@@ -31,12 +31,13 @@ enum whiteBalanceMode {
 
 class AVCoreViewController: UIViewController {
 
-    private var initialized = false
+    var initialized = false
     private var capturedImage: UIImageView!
     private var videoDevice: AVCaptureDevice!
     private var captureSession: AVCaptureSession!
     private var stillImageOutput: AVCaptureStillImageOutput!
-    private var previewLayer: AVCaptureVideoPreviewLayer!
+    var previewLayer: AVCaptureVideoPreviewLayer!
+    var flashOn = false
     
     //some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -159,10 +160,14 @@ class AVCoreViewController: UIViewController {
         }
     }
     
-    func changeISO(value:Float) {
+    func changeISO(value: Float) {
         lockConfig { () -> () in
             self.videoDevice.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: value, completionHandler: nil)
         }
+    }
+    
+    func setFlashMode(on: Bool) {
+        self.flashOn = on
     }
     
     //save photo to camera roll

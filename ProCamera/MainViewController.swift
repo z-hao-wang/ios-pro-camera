@@ -14,6 +14,7 @@ import AssetsLibrary
 
 class MainViewController: AVCoreViewController {
     
+    @IBOutlet weak var flashBtn: UIButton!
     
     private let whiteBalanceModes = ["Auto", "Sunny", "Cloudy", "Manual"]
     
@@ -30,17 +31,18 @@ class MainViewController: AVCoreViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
+        flashBtn.alpha = 0.3
         super.viewWillAppear(animated)
         super.initialize()
     }
     
     override func postInitilize() {
         super.postInitilize()
-        previewView.layer.insertSublayer(previewLayer, atIndex: 0)
+        previewView.layer.insertSublayer(super.previewLayer, atIndex: 0)
     }
     
     override func viewDidAppear(animated: Bool) {
-        if initialized {
+        if super.initialized {
             previewLayer.frame = previewView.bounds
             
             //tmp
@@ -54,6 +56,22 @@ class MainViewController: AVCoreViewController {
     }
     
     
+    @IBAction func didPressFlash(sender: UIButton) {
+        if flashOn {
+            toggleFlashUI(false)
+        } else {
+            toggleFlashUI(true)
+        }
+        setFlashMode(!flashOn)
+    }
+    
+    func toggleFlashUI(on: Bool) {
+        if on {
+            flashBtn.setImage(UIImage(named: "flash"), forState: .Normal)
+        } else {
+            flashBtn.setImage(UIImage(named: "no-flash"), forState: .Normal)
+        }
+    }
     
     @IBAction func didMoveWhiteBalance(sender: UISlider) {
         //Todo move this to different
@@ -64,9 +82,10 @@ class MainViewController: AVCoreViewController {
     
     
 
-    @IBAction func didPressShutter(sender: AnyObject) {
+    @IBAction func didTouchDownShutter(sender: UIButton) {
         takePhoto()
     }
+    
 
 }
 
