@@ -14,8 +14,12 @@ import AssetsLibrary
 
 class MainViewController: AVCoreViewController {
     
-    private let whiteBalanceModes = ["Auto", "Sunny", "Cloudy", "Manual"]
     
+    private let whiteBalanceModes = ["Auto", "Sunny", "Cloudy", "Manual"]
+    @IBOutlet weak var exposureDurationSlider: UISlider!
+    @IBOutlet weak var exposureValueSlider: UISlider!
+    @IBOutlet weak var shutterSpeedLabel: UILabel!
+    @IBOutlet weak var isoValueLabel: UILabel!
     @IBOutlet weak var albumButton: UIImageView!
     @IBOutlet weak var flashBtn: UIButton!
     @IBOutlet weak var controllView: UIView!
@@ -48,6 +52,8 @@ class MainViewController: AVCoreViewController {
             //tmp
             setWhiteBalanceMode(.Temperature(5000))
             changeExposureMode(.Custom)
+            changeExposureDuration(exposureDurationSlider.value)
+            changeEV(exposureValueSlider.value)
         }
     }
     
@@ -95,6 +101,16 @@ class MainViewController: AVCoreViewController {
     override func beforeSavePhoto() {
         super.beforeSavePhoto()
         albumButton.image = lastImage
+    }
+    
+    override func postChangeCameraSetting() {
+        super.postChangeCameraSetting()
+        //let's calc the denominator
+        dispatch_async(dispatch_get_main_queue()) {
+            self.shutterSpeedLabel.text = "1/\(self.FloatToDenominator(Float(self.currentExposureDuration!)))"
+            self.isoValueLabel.text = "\(self.currentISOValue!)"
+        }
+        println("post change postChangeCameraSetting")
     }
 
 }

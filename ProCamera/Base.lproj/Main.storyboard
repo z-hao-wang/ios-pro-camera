@@ -192,7 +192,7 @@
                                             <action selector="didMoveWhiteBalance:" destination="BYZ-38-t0r" eventType="valueChanged" id="z02-0S-XgH"/>
                                         </connections>
                                     </slider>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NXp-X9-v4V" userLabel="FLASH">
+                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NXp-X9-v4V" userLabel="FLASH">
                                         <rect key="frame" x="24" y="28" width="30" height="30"/>
                                         <state key="normal" image="no-flash">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -201,7 +201,7 @@
                                             <action selector="didPressFlash:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Qsq-Kl-aCy"/>
                                         </connections>
                                     </button>
-                                    <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Smt-WG-miJ" userLabel="Shutter Speed">
+                                    <slider opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Smt-WG-miJ" userLabel="Shutter Speed">
                                         <rect key="frame" x="22" y="120" width="262" height="31"/>
                                         <connections>
                                             <action selector="didMoveShutterSpeed:" destination="BYZ-38-t0r" eventType="valueChanged" id="3o9-Jh-or6"/>
@@ -213,8 +213,34 @@
                                             <action selector="didMoveEV:" destination="BYZ-38-t0r" eventType="valueChanged" id="T4Y-07-OpQ"/>
                                         </connections>
                                     </slider>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="ISO" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmx-dj-flM">
+                                        <rect key="frame" x="50" y="28" width="42" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="isoVal" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yVv-Od-sBa">
+                                        <rect key="frame" x="89" y="28" width="69" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5hM-Jb-cIW">
+                                        <rect key="frame" x="227" y="163" width="42" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="fmx-dj-flM" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="leading" constant="50" id="Ck5-Gc-vPE"/>
+                                    <constraint firstItem="yVv-Od-sBa" firstAttribute="top" secondItem="Wkj-1h-woa" secondAttribute="top" constant="28" id="DFz-Py-SoC"/>
+                                    <constraint firstItem="fmx-dj-flM" firstAttribute="top" secondItem="Wkj-1h-woa" secondAttribute="top" constant="28" id="DKU-0U-326"/>
+                                    <constraint firstItem="yVv-Od-sBa" firstAttribute="leading" secondItem="NXp-X9-v4V" secondAttribute="trailing" constant="35" id="pfy-G8-4my"/>
+                                    <constraint firstAttribute="trailing" secondItem="5hM-Jb-cIW" secondAttribute="trailing" constant="51" id="v1q-Ci-Crd"/>
+                                    <constraint firstItem="5hM-Jb-cIW" firstAttribute="top" secondItem="Smt-WG-miJ" secondAttribute="bottom" constant="13" id="xHS-gV-yOA"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -231,8 +257,12 @@
                     </view>
                     <connections>
                         <outlet property="albumButton" destination="nma-9s-AJf" id="5GV-12-xmY"/>
+                        <outlet property="exposureDurationSlider" destination="Smt-WG-miJ" id="HLS-a4-Qtk"/>
+                        <outlet property="exposureValueSlider" destination="74U-5l-XTD" id="Pfv-Cr-5h8"/>
                         <outlet property="flashBtn" destination="NXp-X9-v4V" id="ZdO-vg-06y"/>
+                        <outlet property="isoValueLabel" destination="yVv-Od-sBa" id="iLx-5b-Gsr"/>
                         <outlet property="previewView" destination="Wkj-1h-woa" id="6yc-fZ-3Mf"/>
+                        <outlet property="shutterSpeedLabel" destination="5hM-Jb-cIW" id="msB-Wu-SAD"/>
                         <outlet property="whiteBalanceSlider" destination="5bU-FH-n8F" id="Cyv-PJ-4Ur"/>
                     </connections>
                 </viewController>
