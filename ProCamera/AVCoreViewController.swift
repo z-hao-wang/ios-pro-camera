@@ -91,7 +91,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                         self.captureSession.addOutput(self.currentOutput)
                         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
                         self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
-                        self.previewLayer.connection?.videoOrientation = AVCaptureVideoOrientation.Portrait
+                        self.previewLayer.connection?.videoOrientation = AVCaptureVideoOrientation.LandscapeLeft
                         self.captureSession.startRunning()
                         self.initialized = true
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
