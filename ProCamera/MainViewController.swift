@@ -24,6 +24,9 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var flashBtn: UIButton!
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
+    var viewAppeared = false
+    var histogramView: UIImageView!
+    
     
     @IBOutlet weak var takePhotoButton: UIButton!
     //let sessionQueue = dispatch_queue_create("session_queue", nil)
@@ -55,18 +58,25 @@ class MainViewController: AVCoreViewController {
     
     override func postInitilize() {
         super.postInitilize()
+        if viewAppeared{
+            initView()
+        }
+    }
+    
+    func initView() {
         previewView.layer.insertSublayer(super.previewLayer, atIndex: 0)
+        previewLayer.frame = previewView.bounds
+        //tmp
+        setWhiteBalanceMode(.Temperature(5000))
+        changeExposureMode(.Custom)
+        changeExposureDuration(exposureDurationSlider.value)
+        changeEV(exposureValueSlider.value)
     }
     
     override func viewDidAppear(animated: Bool) {
+        viewAppeared = true
         if super.initialized {
-            previewLayer.frame = previewView.bounds
-            
-            //tmp
-            setWhiteBalanceMode(.Temperature(5000))
-            changeExposureMode(.Custom)
-            changeExposureDuration(exposureDurationSlider.value)
-            changeEV(exposureValueSlider.value)
+            initView()
         }
     }
     
@@ -114,6 +124,13 @@ class MainViewController: AVCoreViewController {
         changeEV(sender.value)
     }
     
+    override func postCalcHistogram() {
+        super.postCalcHistogram()
+        if histogramDisplayImage != nil {
+            albumButton.image = histogramDisplayImage
+        }
+    }
+    
     override func beforeSavePhoto() {
         super.beforeSavePhoto()
         albumButton.image = lastImage
@@ -124,9 +141,8 @@ class MainViewController: AVCoreViewController {
         //let's calc the denominator
         dispatch_async(dispatch_get_main_queue()) {
             self.shutterSpeedLabel.text = "1/\(self.FloatToDenominator(Float(self.currentExposureDuration!)))"
-            self.isoValueLabel.text = "\(self.currentISOValue!)"
+            self.isoValueLabel.text = "\(Int(self.currentISOValue!))"
         }
-        println("post change postChangeCameraSetting")
     }
 
 }
