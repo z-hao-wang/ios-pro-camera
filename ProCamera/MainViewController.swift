@@ -67,7 +67,8 @@ class MainViewController: AVCoreViewController {
     }
     
     @IBAction func didPressTakePhoto(sender: AnyObject) {
-        print("User pressed photo button")
+        takePhoto()
+        beforeSavePhoto()
     }
     
     @IBAction func didPressFlash(sender: UIButton) {
@@ -98,11 +99,6 @@ class MainViewController: AVCoreViewController {
     }
     @IBAction func didMoveEV(sender: UISlider) {
         changeEV(sender.value)
-    }
-
-    @IBAction func didTouchDownShutter(sender: UIButton) {
-        takePhoto()
-        beforeSavePhoto()
     }
     
     override func beforeSavePhoto() {
