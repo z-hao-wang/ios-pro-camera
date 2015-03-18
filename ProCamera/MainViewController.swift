@@ -30,12 +30,21 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var innerPhotoButton: UIView!
     
     @IBOutlet weak var previewView: UIView!
+    
+    @IBOutlet weak var asmButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        takePhotoButton.layer.cornerRadius = (takePhotoButton.bounds.size.height/2);
-        innerPhotoButton.layer.cornerRadius = (innerPhotoButton.bounds.size.height/2);
+        // Make the "take photo" button circular
+        takePhotoButton.layer.cornerRadius = (takePhotoButton.bounds.size.height/2)
+        innerPhotoButton.layer.cornerRadius = (innerPhotoButton.bounds.size.height/2)
+        
+        // Make the ASM button have a border and be circular
+        asmButton.layer.borderWidth = 2.0
+        asmButton.layer.borderColor = UIColor.grayColor().CGColor
+        asmButton.layer.cornerRadius = (asmButton.bounds.size.height/2)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -86,6 +95,10 @@ class MainViewController: AVCoreViewController {
         } else {
             flashBtn.setImage(UIImage(named: "no-flash"), forState: .Normal)
         }
+    }
+    
+    @IBAction func didPressASM(sender: AnyObject) {
+        print("Pressed ASM cycler")
     }
     
     @IBAction func didMoveShutterSpeed(sender: UISlider) {
