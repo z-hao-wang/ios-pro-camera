@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 import AssetsLibrary
-
+import QuartzCore
 
 
 class MainViewController: AVCoreViewController {
@@ -25,13 +25,17 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
     
+    @IBOutlet weak var takePhotoButton: UIButton!
     //let sessionQueue = dispatch_queue_create("session_queue", nil)
+    @IBOutlet weak var innerPhotoButton: UIView!
     
     @IBOutlet weak var previewView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        takePhotoButton.layer.cornerRadius = (takePhotoButton.bounds.size.height/2);
+        innerPhotoButton.layer.cornerRadius = (innerPhotoButton.bounds.size.height/2);
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -62,6 +66,9 @@ class MainViewController: AVCoreViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func didPressTakePhoto(sender: AnyObject) {
+        print("User pressed photo button")
+    }
     
     @IBAction func didPressFlash(sender: UIButton) {
         if flashOn {
