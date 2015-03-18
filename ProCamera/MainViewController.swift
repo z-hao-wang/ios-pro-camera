@@ -25,6 +25,7 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
     var viewAppeared = false
+    var histogramView: UIImageView!
     
     
     @IBOutlet weak var takePhotoButton: UIButton!
@@ -121,6 +122,13 @@ class MainViewController: AVCoreViewController {
     }
     @IBAction func didMoveEV(sender: UISlider) {
         changeEV(sender.value)
+    }
+    
+    override func postCalcHistogram() {
+        super.postCalcHistogram()
+        if histogramDisplayImage != nil {
+            albumButton.image = histogramDisplayImage
+        }
     }
     
     override func beforeSavePhoto() {

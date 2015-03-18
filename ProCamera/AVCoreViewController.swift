@@ -42,15 +42,21 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     private var videoDevice: AVCaptureDevice!
     private var captureSession: AVCaptureSession!
     private var stillImageOutput: AVCaptureStillImageOutput!
+    private var videoDataOutput: AVCaptureVideoDataOutput!
     var previewLayer: AVCaptureVideoPreviewLayer!
     var flashOn = false
     var lastImage: UIImage?
+    var frameImage: CGImage!
     var isoMode: ISOMode = ISOMode.Auto
     var exposureValue: Float = 0.5 // EV
     var currentISOValue: Float?
     var currentExposureDuration: Float64?
     var histogramFilter: CIFilter?
     var _captureSessionQueue: dispatch_queue_t?
+    var currentOutput: AVCaptureOutput!
+    var useStillImageOutput = true
+    var histogramDataImage: CIImage!
+    var histogramDisplayImage: UIImage!
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -67,17 +73,22 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 var input = AVCaptureDeviceInput(device: self.videoDevice, error: &error)
                 if error == nil && self.captureSession.canAddInput(input) {
                     self.captureSession.addInput(input)
-                    
-                    
-                    // CoreImage wants BGRA pixel format
-                    //let outputSettings: NSDictionary = [String(kCVPixelBufferPixelFormatTypeKey): NSNumber(integer: kCVPixelFormatType_32BGRA)]
-                    //self.stillImageOutput.outputSettings = outputSettings
-                    
-                    self.stillImageOutput = AVCaptureStillImageOutput()
-                    self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
-                    
-                    if self.captureSession.canAddOutput(self.stillImageOutput) {
-                        self.captureSession.addOutput(self.stillImageOutput)
+                    if !self.useStillImageOutput {
+                        // CoreImage wants BGRA pixel format
+                        let outputSettings: NSDictionary = [String(kCVPixelBufferPixelFormatTypeKey): NSNumber(integer: kCVPixelFormatType_32BGRA)]
+                        self.videoDataOutput = AVCaptureVideoDataOutput()
+                        self.videoDataOutput.videoSettings = outputSettings
+                        self.videoDataOutput.alwaysDiscardsLateVideoFrames = true
+                        self.videoDataOutput.setSampleBufferDelegate(self, queue: self._captureSessionQueue)
+                        self.currentOutput = self.videoDataOutput
+                    } else {
+                        self.stillImageOutput = AVCaptureStillImageOutput()
+                        self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
+                        self.stillImageOutput.highResolutionStillImageOutputEnabled = true
+                        self.currentOutput = self.stillImageOutput
+                    }
+                    if self.captureSession.canAddOutput(self.currentOutput) {
+                        self.captureSession.addOutput(self.currentOutput)
                         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
                         self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
                         self.previewLayer.connection?.videoOrientation = AVCaptureVideoOrientation.Portrait
@@ -91,18 +102,6 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                     //TODO: send notification
                 }
             })
-            
-            /*
-            histogramFilter = CIFilter(name: "CIAreaHistogram")
-            histogramFilter?.setDefaults()
-            //histogramFilter?.setValue(<#value: AnyObject?#>, forKey: <#String#>)
-            //[histogramFilter setValue:256 forKey:"inputCount"];
-            //[histogramFilter setValue:vectorFromExtent([img extent]) forKey:"inputExtent"];
-            dispatch_async("filtersQueue", { () -> Void in
-                
-            })
-            */
-
         }
     }
     
@@ -291,27 +290,113 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     func setFlashMode(on: Bool) {
         self.flashOn = on
+        //temp test
+        getFrame {
+            self.calcHistogram()
+        }
     }
     
     //save photo to camera roll
     func takePhoto() {
-        if let videoConnection = stillImageOutput!.connectionWithMediaType(AVMediaTypeVideo) {
+        if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
             videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
-            stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
-                if (sampleBuffer != nil) {
-                    var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
-                    var dataProvider = CGDataProviderCreateWithCFData(imageData)
-                    var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
-                    
-                    self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
-                    self.beforeSavePhoto()
-                    //save to camera roll
-                    UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
-                    self.postSavePhoto()
-                }
-            })
+            if useStillImageOutput {
+                stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
+                    if (sampleBuffer != nil) {
+                        var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                        var dataProvider = CGDataProviderCreateWithCFData(imageData)
+                        var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
+                        self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
+                        //save to camera roll
+                        self.beforeSavePhoto()
+                        UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
+                        self.postSavePhoto()
+                    }
+                })
+            } else {
+                //using videoDataOutput
+            }
         }
     }
+    
+    func getFrame(complete: () -> ()) {
+        if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
+            videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
+            if useStillImageOutput {
+                stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
+                    if (sampleBuffer != nil) {
+                        var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                        var dataProvider = CGDataProviderCreateWithCFData(imageData)
+                        self.frameImage = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
+                        complete()
+                    }
+                })
+            } else {
+                //using videoDataOutput
+            }
+        }
+    }
+    
+    func calcHistogram() {
+        dispatch_async(self._captureSessionQueue, { () -> Void in
+            
+            let ciImage = CIImage(CGImage: self.frameImage)
+            let params: NSDictionary = [
+                String(kCIInputImageKey): ciImage,
+                String(kCIInputExtentKey): CIVector(CGRect: ciImage.extent()),
+                "inputCount": 256
+            ]
+            self.histogramFilter = CIFilter(name: "CIAreaHistogram", withInputParameters: params)
+            
+            self.histogramDataImage = self.histogramFilter!.outputImage
+            self.getHistogramRaw(self.histogramDataImage)
+            
+            self.histogramDisplayImage = self.generateHistogramImageFromDataImage(self.histogramDataImage)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.postCalcHistogram()
+            })
+        })
+    }
+    
+    func getHistogramRaw(dataImage: CIImage!) {
+        let context = CIContext(options: nil)
+        let outExtent = dataImage.extent()
+        let cgImage = context.createCGImage(dataImage, fromRect: outExtent)
+        let rawData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage))
+        let pixelData = CFDataGetBytePtr(rawData)
+        let dataLength = CFDataGetLength(rawData);
+        let red = 0
+        let green = 1
+        let blue = 2
+        for var index = 0; index < dataLength; index++ {
+            //let g = pixelData[index + green]
+            let r = pixelData[index + red]
+            //let b = pixelData[index + blue]
+            if r != 0 {
+                println("rgb=\(index):\(r)")
+            }
+            
+        }
+    }
+    
+    func generateHistogramImageFromDataImage(dataImage: CIImage!) -> UIImage! {
+        if dataImage != nil {
+            let context = CIContext(options: nil)
+            let params = [String(kCIInputImageKey): dataImage]
+            let filter = CIFilter(name: "CIHistogramDisplayFilter", withInputParameters: params)
+            var outputImage = filter.outputImage
+            let outExtent = outputImage.extent()
+            let cgImage = context.createCGImage(outputImage, fromRect: outExtent)
+            let outUIImage = UIImage(CGImage: cgImage)
+            return outUIImage
+        }
+        return nil
+    }
+    
+    func postCalcHistogram() {
+        
+    }
+
     
     func applyFilter(image: CIImage) {
         var filter = CIFilter(name: "CISepiaTone")
