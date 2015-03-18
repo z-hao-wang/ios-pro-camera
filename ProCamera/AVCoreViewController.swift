@@ -220,37 +220,41 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func changeExposureDuration(value: Float) {
-        let p = Float64(pow(value, EXPOSURE_DURATION_POWER)) // Apply power function to expand slider's low-end range
-        let minDurationSeconds = Float64(max(CMTimeGetSeconds(videoDevice.activeFormat.minExposureDuration), EXPOSURE_MINIMUM_DURATION))
-        let maxDurationSeconds = Float64(CMTimeGetSeconds(self.videoDevice.activeFormat.maxExposureDuration))
-        let newDurationSeconds = Float64(p * (maxDurationSeconds - minDurationSeconds)) + minDurationSeconds // Scale from 0-1 slider range to actual duration
-
-        if (videoDevice.exposureMode == .Custom) {
-            lockConfig { () -> () in
-                self.currentISOValue = AVCaptureISOCurrent
-                if self.isoMode == .Auto {
-                    // Going to calculate the correct exposure EV
-                    // Keep EV stay the same
-                    // Need to calculate the ISO based on current image exposure
-                    // exposureTime * ISO = EV
-                    // ISO from 29 to 464
-                    // exposureTime from 1/8000 to 1/2
-                    // Let's assume EV = 14.45
-                    
-                    //self.exposureValue = 14.45
-                    self.currentISOValue = self.capISO(Float(self.exposureValue) / Float(newDurationSeconds))
-                    println("iso=\(self.currentISOValue) expo=\(newDurationSeconds)")
+        if initialized {
+            let p = Float64(pow(value, EXPOSURE_DURATION_POWER)) // Apply power function to expand slider's low-end range
+            let minDurationSeconds = Float64(max(CMTimeGetSeconds(videoDevice.activeFormat.minExposureDuration), EXPOSURE_MINIMUM_DURATION))
+            let maxDurationSeconds = Float64(CMTimeGetSeconds(self.videoDevice.activeFormat.maxExposureDuration))
+            let newDurationSeconds = Float64(p * (maxDurationSeconds - minDurationSeconds)) + minDurationSeconds // Scale from 0-1 slider range to actual duration
+            
+            if (videoDevice.exposureMode == .Custom) {
+                lockConfig { () -> () in
+                    self.currentISOValue = AVCaptureISOCurrent
+                    if self.isoMode == .Auto {
+                        // Going to calculate the correct exposure EV
+                        // Keep EV stay the same
+                        // Need to calculate the ISO based on current image exposure
+                        // exposureTime * ISO = EV
+                        // ISO from 29 to 464
+                        // exposureTime from 1/8000 to 1/2
+                        // Let's assume EV = 14.45
+                        
+                        //self.exposureValue = 14.45
+                        self.currentISOValue = self.capISO(Float(self.exposureValue) / Float(newDurationSeconds))
+                        println("iso=\(self.currentISOValue) expo=\(newDurationSeconds)")
+                    }
+                    self.currentExposureDuration = newDurationSeconds
+                    let newExposureTime = CMTimeMakeWithSeconds(Float64(newDurationSeconds), 1000*1000*1000)
+                    self.videoDevice.setExposureModeCustomWithDuration(newExposureTime, ISO: self.currentISOValue!, completionHandler: nil)
                 }
-                self.currentExposureDuration = newDurationSeconds
-                let newExposureTime = CMTimeMakeWithSeconds(Float64(newDurationSeconds), 1000*1000*1000)
-                self.videoDevice.setExposureModeCustomWithDuration(newExposureTime, ISO: self.currentISOValue!, completionHandler: nil)
             }
+        } else {
+            println("not initilized. changeExposureDuration Fail");
         }
     }
     
     func changeEV(value: Float) {
         exposureValue = value * 10.0
-        if self.isoMode == .Auto {
+        if initialized && self.isoMode == .Auto {
             //Need to auto adjust ISO
             self.currentISOValue = self.capISO(Float(exposureValue) / Float(currentExposureDuration!))
             lockConfig { () -> () in
@@ -291,48 +295,57 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     func setFlashMode(on: Bool) {
         self.flashOn = on
         //temp test
-        getFrame {
-            self.calcHistogram()
+        if initialized {
+            getFrame {
+                self.calcHistogram()
+            }
         }
+        
     }
     
     //save photo to camera roll
     func takePhoto() {
-        if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
-            videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
-            if useStillImageOutput {
-                stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
-                    if (sampleBuffer != nil) {
-                        var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
-                        var dataProvider = CGDataProviderCreateWithCFData(imageData)
-                        var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
-                        self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
-                        //save to camera roll
-                        self.beforeSavePhoto()
-                        UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
-                        self.postSavePhoto()
-                    }
-                })
-            } else {
-                //using videoDataOutput
+        if initialized {
+            if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
+                videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
+                if useStillImageOutput {
+                    stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
+                        if (sampleBuffer != nil) {
+                            var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                            var dataProvider = CGDataProviderCreateWithCFData(imageData)
+                            var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
+                            self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
+                            //save to camera roll
+                            self.beforeSavePhoto()
+                            UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
+                            self.postSavePhoto()
+                        }
+                    })
+                } else {
+                    //using videoDataOutput
+                }
             }
+        } else {
+            println("take photo failed. not initialized")
         }
     }
     
     func getFrame(complete: () -> ()) {
-        if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
-            videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
-            if useStillImageOutput {
-                stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
-                    if (sampleBuffer != nil) {
-                        var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
-                        var dataProvider = CGDataProviderCreateWithCFData(imageData)
-                        self.frameImage = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
-                        complete()
-                    }
-                })
-            } else {
-                //using videoDataOutput
+        if initialized {
+            if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
+                videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
+                if useStillImageOutput {
+                    stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
+                        if (sampleBuffer != nil) {
+                            var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                            var dataProvider = CGDataProviderCreateWithCFData(imageData)
+                            self.frameImage = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
+                            complete()
+                        }
+                    })
+                } else {
+                    //using videoDataOutput
+                }
             }
         }
     }
