@@ -9,6 +9,8 @@
 import UIKit
 import AVFoundation
 import AssetsLibrary
+import CoreImage
+import CoreGraphics
 
 enum whiteBalanceMode {
     case Auto
@@ -33,8 +35,7 @@ enum ISOMode {
     case Custom
 }
 
-
-class AVCoreViewController: UIViewController {
+class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     var initialized = false
     private var capturedImage: UIImageView!
@@ -48,6 +49,8 @@ class AVCoreViewController: UIViewController {
     var exposureValue: Float = 0.5 // EV
     var currentISOValue: Float?
     var currentExposureDuration: Float64?
+    var histogramFilter: CIFilter?
+    var _captureSessionQueue: dispatch_queue_t?
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -55,27 +58,84 @@ class AVCoreViewController: UIViewController {
     
     func initialize() {
         if !initialized {
-            captureSession = AVCaptureSession()
-            captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-            videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) //default is back camera
-            var error: NSError?
-            var input = AVCaptureDeviceInput(device: videoDevice, error: &error)
-            if error == nil && captureSession.canAddInput(input) {
-                captureSession.addInput(input)
-                
-                stillImageOutput = AVCaptureStillImageOutput()
-                stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
-                if captureSession.canAddOutput(stillImageOutput) {
-                    captureSession.addOutput(stillImageOutput)
-                    previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-                    previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
-                    previewLayer.connection?.videoOrientation = AVCaptureVideoOrientation.Portrait
-                    postInitilize()
-                    captureSession.startRunning()
+            _captureSessionQueue = dispatch_queue_create("capture_session_queue", nil);
+            dispatch_async(_captureSessionQueue, { () -> Void in
+                self.captureSession = AVCaptureSession()
+                self.captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+                self.videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) //default is back camera
+                var error: NSError?
+                var input = AVCaptureDeviceInput(device: self.videoDevice, error: &error)
+                if error == nil && self.captureSession.canAddInput(input) {
+                    self.captureSession.addInput(input)
+                    
+                    
+                    // CoreImage wants BGRA pixel format
+                    //let outputSettings: NSDictionary = [String(kCVPixelBufferPixelFormatTypeKey): NSNumber(integer: kCVPixelFormatType_32BGRA)]
+                    //self.stillImageOutput.outputSettings = outputSettings
+                    
+                    self.stillImageOutput = AVCaptureStillImageOutput()
+                    self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
+                    
+                    if self.captureSession.canAddOutput(self.stillImageOutput) {
+                        self.captureSession.addOutput(self.stillImageOutput)
+                        self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
+                        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
+                        self.previewLayer.connection?.videoOrientation = AVCaptureVideoOrientation.Portrait
+                        self.captureSession.startRunning()
+                        self.initialized = true
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            self.postInitilize()
+                        })
+                    }
+                    return ()
+                    //TODO: send notification
                 }
-                initialized = true
+            })
+            
+            /*
+            histogramFilter = CIFilter(name: "CIAreaHistogram")
+            histogramFilter?.setDefaults()
+            //histogramFilter?.setValue(<#value: AnyObject?#>, forKey: <#String#>)
+            //[histogramFilter setValue:256 forKey:"inputCount"];
+            //[histogramFilter setValue:vectorFromExtent([img extent]) forKey:"inputExtent"];
+            dispatch_async("filtersQueue", { () -> Void in
+                
+            })
+            */
+
+        }
+    }
+    
+    func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!) {
+        var formatDesc = CMSampleBufferGetFormatDescription(sampleBuffer)
+        var mediaType = CMFormatDescriptionGetMediaType(formatDesc)
+        if (Int(mediaType) != kCMMediaType_Audio) {
+            //video writing
+            //TODO: Write output videos and audios.
+            println("outputsample buffer")
+        }
+    }
+    
+    func runFilter(cameraImage: CIImage, filters: NSArray) -> CIImage? {
+        var currentImage: CIImage?
+        var activeInputs: [CIImage] = []
+        
+        for filter_i in filters {
+            if let filter = filter_i as? CIFilter {
+                filter.setValue(cameraImage, forKey: kCIInputImageKey)
+                currentImage = filter.outputImage;
+                if currentImage == nil {
+                    return nil
+                } else {
+                    activeInputs.append(currentImage!)
+                }
             }
         }
+        
+        if CGRectIsEmpty(currentImage!.extent()) {
+            return nil
+        }
+        return currentImage;
     }
     
     func postInitilize() {
@@ -251,6 +311,16 @@ class AVCoreViewController: UIViewController {
                 }
             })
         }
+    }
+    
+    func applyFilter(image: CIImage) {
+        var filter = CIFilter(name: "CISepiaTone")
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(0.8, forKey: kCIInputIntensityKey)
+        let result = filter.valueForKey(kCIOutputImageKey) as CIImage
+        let context: CGRect = result.extent()
+        
+        
     }
     
     func beforeSavePhoto() {

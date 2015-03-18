@@ -22,6 +22,8 @@
 		AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */; };
 		AF6469B31AAFF7CB0078EA74 /* AVCoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */; };
 		AFC0F2471AB1535800F05B46 /* CameraRollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC0F2461AB1535800F05B46 /* CameraRollViewController.swift */; };
+		AFC0F2491AB4B35F00F05B46 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFC0F2481AB4B35F00F05B46 /* CoreImage.framework */; };
+		AFC0F24B1AB9352C00F05B46 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFC0F24A1AB9352C00F05B46 /* CoreGraphics.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,8 @@
 		AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCoreViewController.swift; sourceTree = "<group>"; };
 		AFC0F2461AB1535800F05B46 /* CameraRollViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraRollViewController.swift; sourceTree = "<group>"; };
+		AFC0F2481AB4B35F00F05B46 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
+		AFC0F24A1AB9352C00F05B46 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +65,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AFC0F24B1AB9352C00F05B46 /* CoreGraphics.framework in Frameworks */,
+				AFC0F2491AB4B35F00F05B46 /* CoreImage.framework in Frameworks */,
 				AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -78,6 +84,8 @@
 		AF0FEFAD1AACC3E2000C8F6E = {
 			isa = PBXGroup;
 			children = (
+				AFC0F24A1AB9352C00F05B46 /* CoreGraphics.framework */,
+				AFC0F2481AB4B35F00F05B46 /* CoreImage.framework */,
 				AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */,
 				AF0FEFB81AACC3E2000C8F6E /* ProCamera */,
 				AF0FEFCE1AACC3E2000C8F6E /* ProCameraTests */,

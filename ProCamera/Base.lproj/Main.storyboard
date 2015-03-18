@@ -192,8 +192,12 @@
                                             <action selector="didMoveWhiteBalance:" destination="BYZ-38-t0r" eventType="valueChanged" id="z02-0S-XgH"/>
                                         </connections>
                                     </slider>
-                                    <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NXp-X9-v4V" userLabel="FLASH">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NXp-X9-v4V" userLabel="FLASH">
                                         <rect key="frame" x="24" y="28" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="FAy-CC-JR2"/>
+                                            <constraint firstAttribute="height" constant="30" id="hoB-r6-nLP"/>
+                                        </constraints>
                                         <state key="normal" image="no-flash">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -219,7 +223,7 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="isoVal" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yVv-Od-sBa">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="isoVal" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yVv-Od-sBa">
                                         <rect key="frame" x="89" y="28" width="69" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
@@ -237,6 +241,8 @@
                                     <constraint firstItem="fmx-dj-flM" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="leading" constant="50" id="Ck5-Gc-vPE"/>
                                     <constraint firstItem="yVv-Od-sBa" firstAttribute="top" secondItem="Wkj-1h-woa" secondAttribute="top" constant="28" id="DFz-Py-SoC"/>
                                     <constraint firstItem="fmx-dj-flM" firstAttribute="top" secondItem="Wkj-1h-woa" secondAttribute="top" constant="28" id="DKU-0U-326"/>
+                                    <constraint firstItem="NXp-X9-v4V" firstAttribute="top" secondItem="Wkj-1h-woa" secondAttribute="top" constant="28" id="OVI-X0-w9o"/>
+                                    <constraint firstItem="NXp-X9-v4V" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="leading" constant="24" id="RI8-jt-wDI"/>
                                     <constraint firstItem="yVv-Od-sBa" firstAttribute="leading" secondItem="NXp-X9-v4V" secondAttribute="trailing" constant="35" id="pfy-G8-4my"/>
                                     <constraint firstAttribute="trailing" secondItem="5hM-Jb-cIW" secondAttribute="trailing" constant="51" id="v1q-Ci-Crd"/>
                                     <constraint firstItem="5hM-Jb-cIW" firstAttribute="top" secondItem="Smt-WG-miJ" secondAttribute="bottom" constant="13" id="xHS-gV-yOA"/>
