@@ -36,6 +36,8 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var previewView: UIView!
     
     @IBOutlet weak var asmButton: UIButton!
+    let enabledLabelColor = UIColor.yellowColor()
+    let disabledLabelColor = UIColor.whiteColor()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,6 +92,46 @@ class MainViewController: AVCoreViewController {
         beforeSavePhoto()
     }
     
+    func toggleISO(enabled: Bool) {
+        if enabled {
+            isoValueLabel.textColor = enabledLabelColor
+            isoSlider.hidden = false
+        } else {
+            isoValueLabel.textColor = disabledLabelColor
+            isoSlider.hidden = true
+        }
+    }
+    
+    func toggleExposureDuration(enabled: Bool) {
+        if enabled {
+            shutterSpeedLabel.textColor = enabledLabelColor
+            exposureValueSlider.hidden = false
+        } else {
+            shutterSpeedLabel.textColor = disabledLabelColor
+            exposureValueSlider.hidden = true
+        }
+    }
+    
+    func toggleExposureValue(enabled: Bool) {
+        if enabled {
+            //shutterSpeedLabel.textColor = enabledLabelColor
+            exposureDurationSlider.hidden = false
+        } else {
+            //shutterSpeedLabel.textColor = disabledLabelColor
+            exposureDurationSlider.hidden = true
+        }
+    }
+    
+    func toggleWhiteBalance(enabled: Bool) {
+        if enabled {
+            //shutterSpeedLabel.textColor = enabledLabelColor
+            whiteBalanceSlider.hidden = false
+        } else {
+            //shutterSpeedLabel.textColor = disabledLabelColor
+            whiteBalanceSlider.hidden = true
+        }
+    }
+    
     @IBAction func didPressFlash(sender: UIButton) {
         if flashOn {
             toggleFlashUI(false)
@@ -121,17 +163,26 @@ class MainViewController: AVCoreViewController {
             changeEV(exposureValueSlider.value)
             changeExposureDuration(exposureValueSlider.value)
             isoMode = .Auto
+            toggleISO(false)
+            toggleExposureDuration(true)
+            toggleExposureValue(true)
         case 2:
             buttonTitle = "M"
             changeExposureMode(.Custom)
             changeExposureDuration(exposureDurationSlider.value)
             isoMode = .Custom
             changeISO(isoSlider.value)
+            toggleISO(true)
+            toggleExposureDuration(true)
+            toggleExposureValue(false)
         default:
             buttonTitle = "A"
             changeExposureMode(.AutoExpose)
             currentISOValue = nil
             currentExposureDuration = nil
+            toggleISO(false)
+            toggleExposureDuration(false)
+            toggleExposureValue(false)
         }
         asmButton.setTitle(buttonTitle, forState: .Normal)
     }

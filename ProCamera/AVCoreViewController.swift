@@ -252,7 +252,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 }
             }
         } else {
-            println("not initilized. changeExposureDuration Fail");
+            println("not initilized. changeExposureDuration Fail")
         }
     }
     
