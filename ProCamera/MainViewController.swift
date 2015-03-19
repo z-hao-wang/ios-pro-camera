@@ -73,6 +73,7 @@ class MainViewController: AVCoreViewController {
         //tmp
         setWhiteBalanceMode(.Temperature(5000))
         changeExposureMode(AVCaptureExposureMode.AutoExpose)
+        didPressASM(1)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -105,29 +106,27 @@ class MainViewController: AVCoreViewController {
     func toggleExposureDuration(enabled: Bool) {
         if enabled {
             shutterSpeedLabel.textColor = enabledLabelColor
-            exposureValueSlider.hidden = false
+            exposureDurationSlider.hidden = false
         } else {
             shutterSpeedLabel.textColor = disabledLabelColor
-            exposureValueSlider.hidden = true
+            exposureDurationSlider.hidden = true
         }
     }
     
     func toggleExposureValue(enabled: Bool) {
         if enabled {
-            //shutterSpeedLabel.textColor = enabledLabelColor
-            exposureDurationSlider.hidden = false
+            evValue.textColor = enabledLabelColor
+            exposureValueSlider.hidden = false
         } else {
-            //shutterSpeedLabel.textColor = disabledLabelColor
-            exposureDurationSlider.hidden = true
+            evValue.textColor = disabledLabelColor
+            exposureValueSlider.hidden = true
         }
     }
     
     func toggleWhiteBalance(enabled: Bool) {
         if enabled {
-            //shutterSpeedLabel.textColor = enabledLabelColor
             whiteBalanceSlider.hidden = false
         } else {
-            //shutterSpeedLabel.textColor = disabledLabelColor
             whiteBalanceSlider.hidden = true
         }
     }
@@ -234,6 +233,16 @@ class MainViewController: AVCoreViewController {
                 self.isoValueLabel.text = "\(Int(self.capISO(self.currentISOValue!)))"
             } else {
                 self.isoValueLabel.text = "Auto"
+            }
+            
+            if self.shootMode == 1 { //only in TV mode
+                //map 0 - EV_MAX, to -3 - 3
+                // self.exposureValue / EV_MAX = x / 6.0
+                // x -= 3.0
+                let expoVal = self.exposureValue / EV_MAX * 6.0 - 3.0
+                self.evValue.text = expoVal.format(".1") //1 digit
+            } else {
+                self.evValue.text = "Auto"
             }
         }
     }
