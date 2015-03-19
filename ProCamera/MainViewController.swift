@@ -27,6 +27,7 @@ class MainViewController: AVCoreViewController {
     var viewAppeared = false
     var histogramView: UIImageView!
     
+    @IBOutlet weak var isoSlider: UISlider!
     
     @IBOutlet weak var takePhotoButton: UIButton!
     //let sessionQueue = dispatch_queue_create("session_queue", nil)
@@ -51,7 +52,7 @@ class MainViewController: AVCoreViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
-        flashBtn.alpha = 0.3
+//        flashBtn.alpha = 0.3
         super.viewWillAppear(animated)
         super.initialize()
     }
@@ -109,6 +110,12 @@ class MainViewController: AVCoreViewController {
     
     @IBAction func didPressASM(sender: AnyObject) {
         print("Pressed ASM cycler")
+    }
+    
+    
+    @IBAction func didMoveISO(sender: UISlider) {
+        let value = sender.value
+        println("Slider value is \(value)")
     }
     
     @IBAction func didMoveShutterSpeed(sender: UISlider) {
