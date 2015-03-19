@@ -15,7 +15,7 @@ import QuartzCore
 class MainViewController: AVCoreViewController {
     
     
-    private let whiteBalanceModes = ["Auto", "Sunny", "Cloudy", "Manual"]
+    
     @IBOutlet weak var exposureDurationSlider: UISlider!
     @IBOutlet weak var exposureValueSlider: UISlider!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
@@ -49,6 +49,7 @@ class MainViewController: AVCoreViewController {
         asmButton.layer.borderWidth = 2.0
         asmButton.layer.borderColor = UIColor.grayColor().CGColor
         asmButton.layer.cornerRadius = (asmButton.bounds.size.height/2)
+        shootMode = 0 //TODO: persist this
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -69,9 +70,7 @@ class MainViewController: AVCoreViewController {
         previewLayer.frame = previewView.bounds
         //tmp
         setWhiteBalanceMode(.Temperature(5000))
-        changeExposureMode(.Custom)
-        changeExposureDuration(exposureDurationSlider.value)
-        changeEV(exposureValueSlider.value)
+        changeExposureMode(AVCaptureExposureMode.AutoExpose)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -110,12 +109,40 @@ class MainViewController: AVCoreViewController {
     
     @IBAction func didPressASM(sender: AnyObject) {
         print("Pressed ASM cycler")
+        if ++shootMode! > 2 {
+            shootMode = 0
+        }
+        var buttonTitle = "A"
+        switch shootMode {
+        case 1:
+            buttonTitle = "Tv"
+            changeExposureMode(.Custom)
+            changeExposureDuration(exposureDurationSlider.value)
+            changeEV(exposureValueSlider.value)
+            changeExposureDuration(exposureValueSlider.value)
+            isoMode = .Auto
+        case 2:
+            buttonTitle = "M"
+            changeExposureMode(.Custom)
+            changeExposureDuration(exposureDurationSlider.value)
+            isoMode = .Custom
+            changeISO(isoSlider.value)
+        default:
+            buttonTitle = "A"
+            changeExposureMode(.AutoExpose)
+            currentISOValue = nil
+            currentExposureDuration = nil
+        }
+        asmButton.setTitle(buttonTitle, forState: .Normal)
     }
     
     
     @IBAction func didMoveISO(sender: UISlider) {
-        let value = sender.value
-        println("Slider value is \(value)")
+        if shootMode == 2 {
+            //only works on manual mode
+            let value = sender.value
+            changeISO(value)
+        }
     }
     
     @IBAction func didMoveShutterSpeed(sender: UISlider) {
@@ -147,8 +174,16 @@ class MainViewController: AVCoreViewController {
         super.postChangeCameraSetting()
         //let's calc the denominator
         dispatch_async(dispatch_get_main_queue()) {
-            self.shutterSpeedLabel.text = "1/\(self.FloatToDenominator(Float(self.currentExposureDuration!)))"
-            self.isoValueLabel.text = "\(Int(self.currentISOValue!))"
+            if self.currentExposureDuration != nil {
+                 self.shutterSpeedLabel.text = "1/\(self.FloatToDenominator(Float(self.currentExposureDuration!)))"
+            } else {
+                self.shutterSpeedLabel.text = "Auto"
+            }
+            if self.currentISOValue != nil {
+                self.isoValueLabel.text = "\(Int(self.capISO(self.currentISOValue!)))"
+            } else {
+                self.isoValueLabel.text = "Auto"
+            }
         }
     }
 
