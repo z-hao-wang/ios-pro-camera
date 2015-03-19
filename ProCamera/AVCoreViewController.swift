@@ -33,6 +33,13 @@ enum whiteBalanceMode {
 enum ISOMode {
     case Auto, Custom
 }
+var EV_MAX: Float = 15.0
+
+extension Float {
+    func format(f: String) -> String {
+        return NSString(format: "%\(f)f", self)
+    }
+}
 
 class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
@@ -252,12 +259,12 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 }
             }
         } else {
-            println("not initilized. changeExposureDuration Fail");
+            println("not initilized. changeExposureDuration Fail")
         }
     }
     
     func changeEV(value: Float) {
-        exposureValue = value * 15.0
+        exposureValue = value * EV_MAX
         if initialized && shootMode == 1 && self.isoMode == .Auto {
             //Need to auto adjust ISO
             self.currentISOValue = self.capISO(Float(exposureValue) / Float(currentExposureDuration!))
@@ -422,8 +429,6 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         filter.setValue(0.8, forKey: kCIInputIntensityKey)
         let result = filter.valueForKey(kCIOutputImageKey) as CIImage
         let context: CGRect = result.extent()
-        
-        
     }
     
     func beforeSavePhoto() {
