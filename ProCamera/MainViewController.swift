@@ -27,6 +27,7 @@ class MainViewController: AVCoreViewController {
     var viewAppeared = false
     var histogramView: UIImageView!
     
+    @IBOutlet weak var isoSlider: UISlider!
     
     @IBOutlet weak var takePhotoButton: UIButton!
     //let sessionQueue = dispatch_queue_create("session_queue", nil)
@@ -52,7 +53,7 @@ class MainViewController: AVCoreViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
-        flashBtn.alpha = 0.3
+//        flashBtn.alpha = 0.3
         super.viewWillAppear(animated)
         super.initialize()
     }
@@ -118,12 +119,14 @@ class MainViewController: AVCoreViewController {
             changeExposureMode(.Custom)
             changeExposureDuration(exposureDurationSlider.value)
             changeEV(exposureValueSlider.value)
+            changeExposureDuration(exposureValueSlider.value)
             isoMode = .Auto
         case 2:
             buttonTitle = "M"
             changeExposureMode(.Custom)
             changeExposureDuration(exposureDurationSlider.value)
             isoMode = .Custom
+            changeISO(isoSlider.value)
         default:
             buttonTitle = "A"
             changeExposureMode(.AutoExpose)
@@ -131,6 +134,15 @@ class MainViewController: AVCoreViewController {
             currentExposureDuration = nil
         }
         asmButton.setTitle(buttonTitle, forState: .Normal)
+    }
+    
+    
+    @IBAction func didMoveISO(sender: UISlider) {
+        if shootMode == 2 {
+            //only works on manual mode
+            let value = sender.value
+            changeISO(value)
+        }
     }
     
     @IBAction func didMoveShutterSpeed(sender: UISlider) {
