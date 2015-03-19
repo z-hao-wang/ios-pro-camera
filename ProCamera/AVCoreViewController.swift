@@ -31,13 +31,13 @@ enum whiteBalanceMode {
 }
 
 enum ISOMode {
-    case Auto
-    case Custom
+    case Auto, Custom
 }
 
 class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     var initialized = false
+    private let whiteBalanceModes = ["Auto", "Sunny", "Cloudy", "Manual"]
     private var capturedImage: UIImageView!
     private var videoDevice: AVCaptureDevice!
     private var captureSession: AVCaptureSession!
@@ -57,6 +57,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var useStillImageOutput = true
     var histogramDataImage: CIImage!
     var histogramDisplayImage: UIImage!
+    var shootMode: Int! //0 = Auto, 1 = Tv, 2= Manual
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -64,6 +65,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     func initialize() {
         if !initialized {
+            isoMode = .Auto
             _captureSessionQueue = dispatch_queue_create("capture_session_queue", nil);
             dispatch_async(_captureSessionQueue, { () -> Void in
                 self.captureSession = AVCaptureSession()
@@ -254,7 +256,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     func changeEV(value: Float) {
         exposureValue = value * 10.0
-        if initialized && self.isoMode == .Auto {
+        if initialized && shootMode == 1 && self.isoMode == .Auto {
             //Need to auto adjust ISO
             self.currentISOValue = self.capISO(Float(exposureValue) / Float(currentExposureDuration!))
             lockConfig { () -> () in
