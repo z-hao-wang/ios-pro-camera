@@ -29,6 +29,7 @@ class MainViewController: AVCoreViewController {
     
     @IBOutlet weak var isoSlider: UISlider!
     
+    @IBOutlet weak var evValue: UILabel!
     @IBOutlet weak var takePhotoButton: UIButton!
     //let sessionQueue = dispatch_queue_create("session_queue", nil)
     @IBOutlet weak var innerPhotoButton: UIView!
@@ -53,7 +54,6 @@ class MainViewController: AVCoreViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
-//        flashBtn.alpha = 0.3
         super.viewWillAppear(animated)
         super.initialize()
     }
