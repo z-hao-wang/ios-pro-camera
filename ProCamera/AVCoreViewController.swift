@@ -12,6 +12,7 @@ import AssetsLibrary
 import CoreImage
 import CoreGraphics
 import Accelerate
+import MediaPlayer
 
 enum whiteBalanceMode {
     case Auto
@@ -75,6 +76,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var gettingFrame: Bool = false
     var timer: dispatch_source_t!
     var histogramRaw: [Int] = Array(count: histogramBuckets, repeatedValue: 0)
+    var configLocked: Bool = false
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -158,17 +160,20 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func postInitilize() {
+        listenVolumeButton()
         startTimer()
     }
     
     func lockConfig(complete: () -> ()) {
         if initialized {
+            configLocked = true
             var error: NSError?
             videoDevice.lockForConfiguration(&error)
             if error == nil {
                 complete()
                 videoDevice.unlockForConfiguration()
                 self.postChangeCameraSetting()
+                configLocked = false
             } else {
                 println("lockForConfiguration Failed \(error)")
             }
@@ -388,7 +393,9 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue)
         dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC) // every 5 seconds, with leeway of 1 second
         dispatch_source_set_event_handler(timer) {
-            self.calcHistogram()
+            if !self.configLocked {
+                self.calcHistogram()
+            }
         }
         dispatch_resume(timer)
     }
@@ -544,7 +551,23 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         return 0
     }
     
-
+    func listenVolumeButton(){
+        let audioSession = AVAudioSession.sharedInstance()
+        audioSession.setActive(true, error: nil)
+        audioSession.addObserver(self, forKeyPath: "outputVolume",
+            options: NSKeyValueObservingOptions.New, context: nil)
+        //hide volumn view
+        var volumeView: MPVolumeView = MPVolumeView(frame: CGRectZero)
+        view.addSubview(volumeView)
+    }
+    
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject,
+        change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+            if keyPath == "outputVolume"{
+                takePhoto()
+            }
+    }
+    
     /*
     // MARK: - Navigation
 
