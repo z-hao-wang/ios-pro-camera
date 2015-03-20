@@ -42,6 +42,8 @@ extension Float {
     }
 }
 
+let histogramBuckets: Int = 16
+
 class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
     var initialized = false
@@ -71,6 +73,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var EV_max: Float = 15.0
     var gettingFrame: Bool = false
     var timer: dispatch_source_t!
+    var histogramRaw: [Int] = Array(count: histogramBuckets, repeatedValue: 0)
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -78,6 +81,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     func initialize() {
         if !initialized {
+            histogramRaw.reserveCapacity(histogramBuckets)
             isoMode = .Auto
             _captureSessionQueue = dispatch_queue_create("capture_session_queue", nil);
             dispatch_async(_captureSessionQueue, { () -> Void in
@@ -118,6 +122,15 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 }
             })
         }
+    }
+    
+    func drawHistogramGraphOnScreen() {
+        let context = UIGraphicsGetCurrentContext()
+        CGContextSetLineWidth(context, 4);
+        CGContextSetStrokeColorWithColor(context,
+            UIColor.whiteColor().CGColor);
+        CGContextFillRect(context, CGRect(x: 0.0, y: 0.0, width: 2.0, height: 10.0));
+        let histogramImage = UIGraphicsGetImageFromCurrentImageContext()
     }
     
     func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!) {
@@ -393,11 +406,27 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         timer = nil
     }
     
+    // scaleDiv = divide by Int
+    func scaleDownCGImage(image: CGImage, scaleDiv: UInt) -> CGImage!{
+        let width = CGImageGetWidth(image) / scaleDiv
+        let height = CGImageGetHeight(image) / scaleDiv
+        let bitsPerComponent = CGImageGetBitsPerComponent(image)
+        let bytesPerRow = CGImageGetBytesPerRow(image)
+        let colorSpace = CGImageGetColorSpace(image)
+        let bitmapInfo = CGImageGetBitmapInfo(image)
+        let context = CGBitmapContextCreate(nil, width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo)
+        CGContextSetInterpolationQuality(context, kCGInterpolationMedium)
+        let imgSize = CGSize(width: Int(width), height: Int(height))
+        CGContextDrawImage(context, CGRect(origin: CGPointZero, size: imgSize), image)
+        println(imgSize)
+        return CGBitmapContextCreateImage(context)
+    }
+    
     func calcHistogram() {
         if initialized {
             self.getFrame {
                 dispatch_async(self._captureSessionQueue, { () -> Void in
-                    let ciImage = CIImage(CGImage: self.frameImage)
+                    let ciImage = CIImage(CGImage: self.scaleDownCGImage(self.frameImage, scaleDiv: 5))
                     if ciImage != nil {
                         /* //Was trying to use a filter but doesn't work out
                         let params: NSDictionary = [
@@ -441,16 +470,24 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         var error:vImage_Error = vImageHistogramCalculation_ARGB8888(&vImageBuffer, histogram, 0);
         
         if (error == kvImageNoError) {
-            let pixCountRefNum: Double = 100000.0
+            let pixCountRefNum: Double = 1.0
             var totalExpoVal = 0.0
+            //clear histogramRaw
+            histogramRaw = Array(count: histogramBuckets, repeatedValue: 0)
             for var j = 0; j < 256; j++ {
                 let currentVal = Double(histogram[0][j] + histogram[1][j] + histogram[2][j]) / pixCountRefNum
                 if currentVal > 0 {
-                    println("j=\(j),\(currentVal)")
+                    //find out which bucket it is in
+                    let bucketNum = j / histogramBuckets
+                    histogramRaw[bucketNum] += Int(currentVal)
+                    //println("j=\(j),\(currentVal)")
                     if self.enableLastHistogramEV {
                         totalExpoVal += currentVal * Double(j)
                     }
                 }
+            }
+            for var i = 0; i < histogramRaw.count; i++ {
+                println("i=\(i),\(histogramRaw[i])")
             }
             //println("totalExpoVal=\(totalExpoVal)")
             if self.enableLastHistogramEV {
@@ -486,7 +523,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func postCalcHistogram() {
-        
+        drawHistogramGraphOnScreen()
     }
 
     
