@@ -14,7 +14,7 @@ import QuartzCore
 
 class MainViewController: AVCoreViewController {
     
-    
+    @IBOutlet weak var histogramView: HistogramView!
     
     @IBOutlet weak var exposureDurationSlider: UISlider!
     @IBOutlet weak var exposureValueSlider: UISlider!
@@ -25,7 +25,6 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
     var viewAppeared = false
-    var histogramView: UIImageView!
     
     @IBOutlet weak var isoSlider: UISlider!
     
@@ -58,6 +57,8 @@ class MainViewController: AVCoreViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         super.initialize()
+        histogramView.opaque = false
+        histogramView.backgroundColor = UIColor.clearColor()
     }
     
     override func postInitilize() {
@@ -184,6 +185,7 @@ class MainViewController: AVCoreViewController {
             toggleExposureValue(false)
         }
         asmButton.setTitle(buttonTitle, forState: .Normal)
+        //calcHistogram()
     }
     
     
@@ -226,9 +228,7 @@ class MainViewController: AVCoreViewController {
     
     override func postCalcHistogram() {
         super.postCalcHistogram()
-        if histogramDisplayImage != nil {
-            albumButton.image = histogramDisplayImage
-        }
+        histogramView.didUpdateHistogramRaw(histogramRaw)
     }
     
     override func beforeSavePhoto() {
@@ -255,7 +255,7 @@ class MainViewController: AVCoreViewController {
                 //map 0 - EV_MAX, to -3 - 3
                 // self.exposureValue / EV_MAX = x / 6.0
                 // x -= 3.0
-                let expoVal = self.exposureValue / EV_MAX * 6.0 - 3.0
+                let expoVal = self.exposureValue / self.EV_max * 6.0 - 3.0
                 self.evValue.text = expoVal.format(".1") //1 digit
             } else {
                 self.evValue.text = "Auto"
