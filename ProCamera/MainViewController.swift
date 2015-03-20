@@ -210,6 +210,22 @@ class MainViewController: AVCoreViewController {
         changeEV(sender.value)
     }
     
+    @IBAction func didPressEvButton(sender: UIButton) {
+        println("Pressed EV")
+    }
+    
+    @IBAction func didPressIsoButton(sender: UIButton) {
+        println("Pressed ISO")
+    }
+    
+    @IBAction func didPressShutterButton(sender: UIButton) {
+        println("Pressed Shutter")
+    }
+    
+    @IBAction func didPressWBButton(sender: UIButton) {
+        println("Pressed WB")
+    }
+    
     override func postCalcHistogram() {
         super.postCalcHistogram()
         histogramView.didUpdateHistogramRaw(histogramRaw)
