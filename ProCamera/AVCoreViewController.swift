@@ -335,6 +335,14 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         self.flashOn = on
     }
     
+    func playShutterSound() {
+        let path = NSBundle.mainBundle().pathForResource("shutter_sound", ofType: "mp3")
+        var theAudio = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: path!), error: nil)
+        theAudio.prepareToPlay()
+        theAudio.volume = 1.0
+        theAudio.play()
+    }
+    
     //save photo to camera roll
     func takePhoto() {
         if initialized {
@@ -351,6 +359,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                             self.beforeSavePhoto()
                             UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
                             self.postSavePhoto()
+                            //self.playShutterSound()
+                            println("Take Photo")
                         }
                     })
                 } else {
