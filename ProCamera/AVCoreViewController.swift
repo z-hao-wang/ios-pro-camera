@@ -12,6 +12,7 @@ import AssetsLibrary
 import CoreImage
 import CoreGraphics
 import Accelerate
+import MediaPlayer
 
 enum whiteBalanceMode {
     case Auto
@@ -44,6 +45,7 @@ extension Float {
 
 
 let histogramBuckets: Int = 16
+let histogramCalcIntervalFrames = 10 //every X frames, calc one histogram
 
 class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
@@ -75,6 +77,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var gettingFrame: Bool = false
     var timer: dispatch_source_t!
     var histogramRaw: [Int] = Array(count: histogramBuckets, repeatedValue: 0)
+    var configLocked: Bool = false
+    var currentHistogramFrameCount: Int = 0
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
@@ -93,22 +97,28 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 var input = AVCaptureDeviceInput(device: self.videoDevice, error: &error)
                 if error == nil && self.captureSession.canAddInput(input) {
                     self.captureSession.addInput(input)
-                    if !self.useStillImageOutput {
-                        // CoreImage wants BGRA pixel format
-                        let outputSettings: NSDictionary = [String(kCVPixelBufferPixelFormatTypeKey): NSNumber(integer: kCVPixelFormatType_32BGRA)]
-                        self.videoDataOutput = AVCaptureVideoDataOutput()
-                        self.videoDataOutput.videoSettings = outputSettings
-                        self.videoDataOutput.alwaysDiscardsLateVideoFrames = true
-                        self.videoDataOutput.setSampleBufferDelegate(self, queue: self._captureSessionQueue)
-                        self.currentOutput = self.videoDataOutput
-                    } else {
-                        self.stillImageOutput = AVCaptureStillImageOutput()
-                        self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
-                        self.stillImageOutput.highResolutionStillImageOutputEnabled = true
-                        self.currentOutput = self.stillImageOutput
+                    // @Discussion:
+                    // Need AVCaptureVideoDataOutput for histogram
+                    // AND
+                    // AVCaptureStillImageOutput for photo capture
+                    // CoreImage wants BGRA pixel format
+                    let outputSettings: NSDictionary = [String(kCVPixelBufferPixelFormatTypeKey): NSNumber(integer: kCVPixelFormatType_32BGRA)]
+                    self.videoDataOutput = AVCaptureVideoDataOutput()
+                    self.videoDataOutput.videoSettings = outputSettings
+                    self.videoDataOutput.alwaysDiscardsLateVideoFrames = true
+                    self.videoDataOutput.setSampleBufferDelegate(self, queue: self._captureSessionQueue)
+                    
+                    if self.captureSession.canAddOutput(self.videoDataOutput) {
+                        self.captureSession.addOutput(self.videoDataOutput) //add output
                     }
-                    if self.captureSession.canAddOutput(self.currentOutput) {
-                        self.captureSession.addOutput(self.currentOutput)
+                
+                    self.stillImageOutput = AVCaptureStillImageOutput()
+                    self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
+                    self.stillImageOutput.highResolutionStillImageOutputEnabled = true
+                    self.currentOutput = self.stillImageOutput
+                    
+                    if self.captureSession.canAddOutput(self.stillImageOutput) {
+                        self.captureSession.addOutput(self.stillImageOutput)
                         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
                         self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
                         self.previewLayer.connection?.videoOrientation = AVCaptureVideoOrientation.LandscapeLeft
@@ -129,9 +139,18 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         var formatDesc = CMSampleBufferGetFormatDescription(sampleBuffer)
         var mediaType = CMFormatDescriptionGetMediaType(formatDesc)
         if (Int(mediaType) != kCMMediaType_Audio) {
-            //video writing
-            //TODO: Write output videos and audios.
-            println("outputsample buffer")
+            //video
+            //calc histogram every X frames
+            if ++currentHistogramFrameCount >= histogramCalcIntervalFrames {
+                //calc histogram
+                
+                let imageBuffer: CVImageBufferRef = CMSampleBufferGetImageBuffer(sampleBuffer)
+                var sourceImage = CIImage(CVPixelBuffer: imageBuffer, options: nil)
+                if sourceImage != nil {
+                    self.calcHistogram(sourceImage)
+                }
+                currentHistogramFrameCount = 0
+            }
         }
     }
     
@@ -158,17 +177,19 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func postInitilize() {
-        startTimer()
+        listenVolumeButton()
     }
     
     func lockConfig(complete: () -> ()) {
         if initialized {
+            configLocked = true
             var error: NSError?
             videoDevice.lockForConfiguration(&error)
             if error == nil {
                 complete()
                 videoDevice.unlockForConfiguration()
                 self.postChangeCameraSetting()
+                configLocked = false
             } else {
                 println("lockForConfiguration Failed \(error)")
             }
@@ -306,15 +327,18 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func calcISOFromNormalizedValue(value: Float) -> Float {
-        var _value = value
-        if _value > 1.0 {
-            _value = 1.0
+        if initialized {
+            var _value = value
+            if _value > 1.0 {
+                _value = 1.0
+            }
+            //map it to the proper iso value
+            let minimumValue = self.videoDevice.activeFormat.minISO
+            let maximumValue = self.videoDevice.activeFormat.maxISO
+            let newValue = _value * (maximumValue - minimumValue) + minimumValue
+            return newValue
         }
-        //map it to the proper iso value
-        let minimumValue = self.videoDevice.activeFormat.minISO
-        let maximumValue = self.videoDevice.activeFormat.maxISO
-        let newValue = _value * (maximumValue - minimumValue) + minimumValue
-        return newValue
+        return Float(0.0)
     }
     
     //input value from 0.0 to 1.0
@@ -328,6 +352,14 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     func setFlashMode(on: Bool) {
         self.flashOn = on
+    }
+    
+    func playShutterSound() {
+        let path = NSBundle.mainBundle().pathForResource("shutter_sound", ofType: "mp3")
+        var theAudio = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: path!), error: nil)
+        theAudio.prepareToPlay()
+        theAudio.volume = 1.0
+        theAudio.play()
     }
     
     //save photo to camera roll
@@ -346,6 +378,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                             self.beforeSavePhoto()
                             UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
                             self.postSavePhoto()
+                            //self.playShutterSound()
+                            println("Take Photo")
                         }
                     })
                 } else {
@@ -383,12 +417,15 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         }
     }
     
+    //Deprecated.
     func startTimer() {
         let queue = dispatch_queue_create("com.procam.timer", nil)
         timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue)
         dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 1 * NSEC_PER_SEC) // every 5 seconds, with leeway of 1 second
         dispatch_source_set_event_handler(timer) {
-            self.calcHistogram()
+            if !self.configLocked {
+                //self.calcHistogram()
+            }
         }
         dispatch_resume(timer)
     }
@@ -399,7 +436,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     // scaleDiv = divide by Int
-    func scaleDownCGImage(image: CGImage, scaleDiv: UInt) -> CGImage!{
+    func scaleDownCGImage(image: CGImage, scale: Float) -> CGImage!{
+        var scaleDiv = UInt(1.0 / scale)
         let width = CGImageGetWidth(image) / scaleDiv
         let height = CGImageGetHeight(image) / scaleDiv
         let bitsPerComponent = CGImageGetBitsPerComponent(image)
@@ -414,41 +452,49 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         return CGBitmapContextCreateImage(context)
     }
     
-    func calcHistogram() {
+    func calcHistogram(ciImage: CIImage!) {
         if initialized {
-            self.getFrame {
-                dispatch_async(self._captureSessionQueue, { () -> Void in
-                    let ciImage = CIImage(CGImage: self.scaleDownCGImage(self.frameImage, scaleDiv: 5))
-                    if ciImage != nil {
-                        /* //Was trying to use a filter but doesn't work out
-                        let params: NSDictionary = [
-                            String(kCIInputImageKey): ciImage,
-                            String(kCIInputExtentKey): CIVector(CGRect: ciImage.extent()),
-                            "inputCount": 256
-                        ]
-                        self.histogramFilter = CIFilter(name: "CIAreaHistogram", withInputParameters: params)
+            dispatch_async(self._captureSessionQueue, { () -> Void in
+                if ciImage != nil {
+                    /* //Was trying to use a filter but doesn't work out
+                    let params: NSDictionary = [
+                        String(kCIInputImageKey): ciImage,
+                        String(kCIInputExtentKey): CIVector(CGRect: ciImage.extent()),
+                        "inputCount": 256
+                    ]
+                    self.histogramFilter = CIFilter(name: "CIAreaHistogram", withInputParameters: params)
 
-                        self.histogramDataImage = self.histogramFilter!.outputImage
-                        */
-                        self.getHistogramRaw(self.frameImage)
+                    self.histogramDataImage = self.histogramFilter!.outputImage
+                    */
+                    
+                    self.getHistogramRaw(ciImage)
+                    
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         
-                        //self.histogramDisplayImage = self.generateHistogramImageFromDataImage(self.histogramDataImage)
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            self.postCalcHistogram()
-                        })
-                    }
-                })
-            }
+                        self.postCalcHistogram()
+                    })
+                }
+            })
         }
     }
     
-    func getHistogramRaw(dataImage: CGImage) {
-        var imageData: CFDataRef = CGDataProviderCopyData(CGImageGetDataProvider(dataImage))
+    func convertCIImageToCGImage(inputImage: CIImage) -> CGImage! {
+        let context = CIContext(options: nil)
+        if context != nil {
+            return context.createCGImage(inputImage, fromRect: inputImage.extent())
+        }
+        return nil
+    }
+    
+    func getHistogramRaw(dataImage: CIImage) {
+        var cgImage = convertCIImageToCGImage(dataImage)
+        cgImage = scaleDownCGImage(cgImage, scale: 0.5)
+        var imageData: CFDataRef = CGDataProviderCopyData(CGImageGetDataProvider(cgImage))
         var dataInput: UnsafePointer<UInt8> = CFDataGetBytePtr(imageData)
         var dataInputMutable = UnsafeMutablePointer<Void>(dataInput)
-        var height: vImagePixelCount = CGImageGetHeight(dataImage)
-        var width: vImagePixelCount = CGImageGetWidth(dataImage)
-        var vImageBuffer = vImage_Buffer(data: dataInputMutable, height: height, width: width, rowBytes: CGImageGetBytesPerRow(dataImage))
+        var height: vImagePixelCount = CGImageGetHeight(cgImage)
+        var width: vImagePixelCount = CGImageGetWidth(cgImage)
+        var vImageBuffer = vImage_Buffer(data: dataInputMutable, height: height, width: width, rowBytes: CGImageGetBytesPerRow(cgImage))
         var r = UnsafeMutablePointer<vImagePixelCount>.alloc(256)
         var g = UnsafeMutablePointer<vImagePixelCount>.alloc(256)
         var b = UnsafeMutablePointer<vImagePixelCount>.alloc(256)
@@ -544,7 +590,24 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         return 0
     }
     
-
+    func listenVolumeButton(){
+        let audioSession = AVAudioSession.sharedInstance()
+        audioSession.setActive(true, error: nil)
+        audioSession.addObserver(self, forKeyPath: "outputVolume",
+            options: NSKeyValueObservingOptions.New, context: nil)
+        //hide volumn view
+        let rect = CGRect(x: -500.0, y: -500.0, width: 0, height: 0)
+        var volumeView: MPVolumeView = MPVolumeView(frame: rect)
+        view.addSubview(volumeView)
+    }
+    
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject,
+        change: [NSObject : AnyObject], context: UnsafeMutablePointer<Void>) {
+            if keyPath == "outputVolume"{
+                takePhoto()
+            }
+    }
+    
     /*
     // MARK: - Navigation
 
