@@ -478,13 +478,16 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         }
     }
     
-    func getHistogramRaw(dataImage: CIImage) {
-        let rect = dataImage.extent()
+    func convertCIImageToCGImage(inputImage: CIImage) -> CGImage! {
         let context = CIContext(options: nil)
-        if context == nil {
-            return ()
+        if context != nil {
+            return context.createCGImage(inputImage, fromRect: inputImage.extent())
         }
-        var cgImage: CGImage = context.createCGImage(dataImage, fromRect: rect)
+        return nil
+    }
+    
+    func getHistogramRaw(dataImage: CIImage) {
+        var cgImage = convertCIImageToCGImage(dataImage)
         cgImage = scaleDownCGImage(cgImage, scale: 0.5)
         var imageData: CFDataRef = CGDataProviderCopyData(CGImageGetDataProvider(cgImage))
         var dataInput: UnsafePointer<UInt8> = CFDataGetBytePtr(imageData)
