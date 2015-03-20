@@ -42,6 +42,7 @@ extension Float {
     }
 }
 
+
 let histogramBuckets: Int = 16
 
 class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -122,15 +123,6 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 }
             })
         }
-    }
-    
-    func drawHistogramGraphOnScreen() {
-        let context = UIGraphicsGetCurrentContext()
-        CGContextSetLineWidth(context, 4);
-        CGContextSetStrokeColorWithColor(context,
-            UIColor.whiteColor().CGColor);
-        CGContextFillRect(context, CGRect(x: 0.0, y: 0.0, width: 2.0, height: 10.0));
-        let histogramImage = UIGraphicsGetImageFromCurrentImageContext()
     }
     
     func captureOutput(captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, fromConnection connection: AVCaptureConnection!) {
@@ -418,7 +410,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         CGContextSetInterpolationQuality(context, kCGInterpolationMedium)
         let imgSize = CGSize(width: Int(width), height: Int(height))
         CGContextDrawImage(context, CGRect(origin: CGPointZero, size: imgSize), image)
-        println(imgSize)
+        println("scaled image for histogram calc \(imgSize)")
         return CGBitmapContextCreateImage(context)
     }
     
@@ -486,9 +478,6 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                     }
                 }
             }
-            for var i = 0; i < histogramRaw.count; i++ {
-                println("i=\(i),\(histogramRaw[i])")
-            }
             //println("totalExpoVal=\(totalExpoVal)")
             if self.enableLastHistogramEV {
                 lastHistogramEV = totalExpoVal
@@ -523,7 +512,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func postCalcHistogram() {
-        drawHistogramGraphOnScreen()
+        
     }
 
     

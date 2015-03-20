@@ -14,7 +14,7 @@ import QuartzCore
 
 class MainViewController: AVCoreViewController {
     
-    
+    @IBOutlet weak var histogramView: HistogramView!
     
     @IBOutlet weak var exposureDurationSlider: UISlider!
     @IBOutlet weak var exposureValueSlider: UISlider!
@@ -25,7 +25,6 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
     var viewAppeared = false
-    var histogramView: UIImageView!
     
     @IBOutlet weak var isoSlider: UISlider!
     
@@ -58,6 +57,8 @@ class MainViewController: AVCoreViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         super.initialize()
+        histogramView.opaque = false
+        histogramView.backgroundColor = UIColor.clearColor()
     }
     
     override func postInitilize() {
@@ -211,9 +212,7 @@ class MainViewController: AVCoreViewController {
     
     override func postCalcHistogram() {
         super.postCalcHistogram()
-        if histogramDisplayImage != nil {
-            albumButton.image = histogramDisplayImage
-        }
+        histogramView.didUpdateHistogramRaw(histogramRaw)
     }
     
     override func beforeSavePhoto() {
