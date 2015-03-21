@@ -56,15 +56,8 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func changeSetting(name: String, value: Bool) {
         switch name {
-        case settings[0]:
-            //grid
-            settingsValue[settings[0]] = value
-        case settings[1]:
-            //grid
-            settingsValue[settings[1]] = value
-        case settings[2]:
-            //grid
-            settingsValue[settings[2]] = value
+        case settings[0], settings[1], settings[2]:
+            settingsValue[name] = value
         default:
             let x = 1
         }

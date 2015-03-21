@@ -31,6 +31,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     @IBOutlet weak var whiteBalanceSlider: UISlider!
     var viewAppeared = false
     
+    @IBOutlet weak var meterImage: UIImageView!
     @IBOutlet weak var isoSlider: UISlider!
     
     @IBOutlet weak var evValue: UILabel!
@@ -124,6 +125,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             isoValueLabel.textColor = disabledLabelColor
             isoSlider.hidden = true
         }
+        //hack force hidden
+        isoSlider.hidden = true
     }
     
     func toggleExposureDuration(enabled: Bool) {
@@ -134,6 +137,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             shutterSpeedLabel.textColor = disabledLabelColor
             exposureDurationSlider.hidden = true
         }
+        //hack force hidden
+        exposureDurationSlider.hidden = true
     }
     
     func toggleExposureValue(enabled: Bool) {
@@ -144,6 +149,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             evValue.textColor = disabledLabelColor
             exposureValueSlider.hidden = true
         }
+        //hack force hidden
+        exposureValueSlider.hidden = true
     }
     
     func toggleWhiteBalance(enabled: Bool) {
@@ -152,6 +159,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         } else {
             whiteBalanceSlider.hidden = true
         }
+        //hack force hidden
+        whiteBalanceSlider.hidden = true
     }
     
     @IBAction func didPressFlash(sender: UIButton) {
@@ -172,6 +181,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func updateASM() {
+        destroyMeterView()
         var buttonTitle = "A"
         switch shootMode {
         case 1:
@@ -262,10 +272,15 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     @IBAction func didPressWBButton(sender: UIButton) {
         println("Pressed WB")
+        self.currentSetAttr = "WB"
+        initMeterView()
     }
     
     func initMeterView() {
         scrollView.hidden = false
+        //kill scrolling if any
+        let offset = scrollView.contentOffset
+        scrollView.setContentOffset(offset, animated: false)
         meterCenter.hidden = false
         //important for scroll view to work properly
         scrollView.contentSize = meterView.frame.size
@@ -274,7 +289,45 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         let scrollMax = scrollView.contentSize.height -
             scrollView.frame.height
         scrollView.contentOffset.y = CGFloat(value) * scrollMax
+        //temp hide the image
+        self.meterImage.hidden = true
+        //self.meterImage.image = drawMeterImage()
+        meterView.opaque = false
+        meterView.backgroundColor = UIColor.clearColor()
+        //meterView.frame = CGRectMake(0, 0, meterView.frame.width, 300.0)
+        //meterView.bounds = meterView.frame
+        println("meterView: Frame \(meterView.bounds)")
+        meterView.setNeedsDisplay()
     }
+    
+    /*
+    func drawMeterImage () -> UIImage! {
+        let size = CGSizeMake(45.0, 600.0)
+        // Setup our context
+        let bounds = CGRect(origin: CGPoint.zeroPoint, size: size)
+        let opaque = false
+        let scale: CGFloat = 0
+        UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
+        let context = UIGraphicsGetCurrentContext()
+        
+        // Setup complete, do drawing here
+        CGContextSetStrokeColorWithColor(context, UIColor.redColor().CGColor)
+        CGContextSetLineWidth(context, 2.0)
+        
+        CGContextStrokeRect(context, bounds)
+        
+        CGContextBeginPath(context)
+        CGContextMoveToPoint(context, CGRectGetMinX(bounds), CGRectGetMinY(bounds))
+        CGContextAddLineToPoint(context, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds))
+        CGContextMoveToPoint(context, CGRectGetMaxX(bounds), CGRectGetMinY(bounds))
+        CGContextAddLineToPoint(context, CGRectGetMinX(bounds), CGRectGetMaxY(bounds))
+        CGContextStrokePath(context)
+        
+        // Drawing complete, retrieve the finished image and cleanup
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image
+    }*/
     
     func destroyMeterView() {
         scrollView.hidden = true
@@ -298,6 +351,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
                 changeISO(value)
             case "SS":
                 changeExposureDuration(value)
+            case "WB":
+                changeTemperature(value)
             default:
                 let x = 1
         }
