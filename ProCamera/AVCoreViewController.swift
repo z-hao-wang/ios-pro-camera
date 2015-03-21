@@ -81,7 +81,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var currentHistogramFrameCount: Int = 0
     
     // Some default settings
-    let EXPOSURE_DURATION_POWER:Float = 5.0 //the exposure slider gain
+    let EXPOSURE_DURATION_POWER:Float = 4.0 //the exposure slider gain
     let EXPOSURE_MINIMUM_DURATION:Float64 = 1.0/1000.0
     
     func initialize() {
@@ -315,6 +315,24 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                 self.videoDevice.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: self.currentISOValue!, completionHandler: nil)
             }
         }
+    }
+    
+    func getCurrentValueNormalized(name: String) -> Float! {
+        if name == "EV" {
+            return exposureValue / EV_max
+        } else if name == "ISO" {
+            if currentISOValue != nil {
+                return (currentISOValue! - self.videoDevice.activeFormat.minISO) /  (self.videoDevice.activeFormat.maxISO - self.videoDevice.activeFormat.minISO)
+            }
+        } else if name == "SS"{ //shuttle speed
+            let minDurationSeconds = Float64(max(CMTimeGetSeconds(videoDevice.activeFormat.minExposureDuration), EXPOSURE_MINIMUM_DURATION))
+            let maxDurationSeconds = Float64(CMTimeGetSeconds(self.videoDevice.activeFormat.maxExposureDuration))
+            if currentExposureDuration != nil {
+                let val = Float((currentExposureDuration! - minDurationSeconds) / (maxDurationSeconds - minDurationSeconds))
+                return Float(sqrt(sqrt(val))) // Apply reverse power
+            }
+        }
+        return 0.5
     }
     
     func capISO(value: Float) -> Float {
