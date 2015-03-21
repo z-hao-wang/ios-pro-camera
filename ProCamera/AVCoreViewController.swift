@@ -281,7 +281,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                         
                         //self.exposureValue = 14.45
                         self.currentISOValue = self.capISO(Float(self.exposureValue) / Float(newDurationSeconds))
-                        println("iso=\(self.currentISOValue) expo=\(newDurationSeconds)")
+                        //println("iso=\(self.currentISOValue) expo=\(newDurationSeconds)")
                     } else if self.currentISOValue == nil{
                         self.currentISOValue = AVCaptureISOCurrent
                     }
