@@ -448,7 +448,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         CGContextSetInterpolationQuality(context, kCGInterpolationMedium)
         let imgSize = CGSize(width: Int(width), height: Int(height))
         CGContextDrawImage(context, CGRect(origin: CGPointZero, size: imgSize), image)
-        println("scaled image for histogram calc \(imgSize)")
+        //println("scaled image for histogram calc \(imgSize)")
         return CGBitmapContextCreateImage(context)
     }
     
@@ -561,6 +561,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         
     }
 
+
+    
     
     func applyFilter(image: CIImage) {
         var filter = CIFilter(name: "CISepiaTone")

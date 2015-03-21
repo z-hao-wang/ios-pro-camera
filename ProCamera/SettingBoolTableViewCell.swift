@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol settingsDelegate {
+    func changeSetting(name: String, value: Bool)
+}
+
 class SettingBoolTableViewCell: UITableViewCell {
+    
+    var delegate: settingsDelegate?
 
     @IBOutlet weak var switchBtn: UISwitch!
     @IBOutlet weak var settingName: UILabel!
@@ -21,6 +27,11 @@ class SettingBoolTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    
+    @IBAction func onChangeSwitch(sender: UISwitch) {
+        delegate?.changeSetting(self.settingName.text!, value: sender.on)
     }
 
 }

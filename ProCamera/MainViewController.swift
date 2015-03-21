@@ -12,10 +12,15 @@ import AssetsLibrary
 import QuartzCore
 
 
-class MainViewController: AVCoreViewController {
+class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
+    
+    @IBOutlet weak var settingButton: UIButton!
     @IBOutlet weak var histogramView: HistogramView!
     
+    @IBOutlet weak var meterCenter: UIView!
+    @IBOutlet weak var meterView: MeterView!
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var exposureDurationSlider: UISlider!
     @IBOutlet weak var exposureValueSlider: UISlider!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
@@ -34,6 +39,8 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var innerPhotoButton: UIView!
     
     @IBOutlet weak var previewView: UIView!
+    var currentSetAttr: String! //The current attr to change
+
     
     @IBOutlet weak var asmButton: UIButton!
     let enabledLabelColor = UIColor.yellowColor()
@@ -52,6 +59,7 @@ class MainViewController: AVCoreViewController {
         asmButton.layer.borderColor = UIColor.grayColor().CGColor
         asmButton.layer.cornerRadius = (asmButton.bounds.size.height/2)
         shootMode = 0 //TODO: persist this
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -59,6 +67,7 @@ class MainViewController: AVCoreViewController {
         super.initialize()
         histogramView.opaque = false
         histogramView.backgroundColor = UIColor.clearColor()
+        scrollView.delegate = self
     }
     
     override func postInitilize() {
@@ -68,13 +77,22 @@ class MainViewController: AVCoreViewController {
         }
     }
     
+    override func supportedInterfaceOrientations() -> Int {
+        return Int(UIInterfaceOrientationMask.LandscapeLeft.rawValue)
+    }
+    
+    override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
     func initView() {
         previewView.layer.insertSublayer(super.previewLayer, atIndex: 0)
         previewLayer.frame = previewView.bounds
         //tmp
         setWhiteBalanceMode(.Temperature(5000))
         changeExposureMode(AVCaptureExposureMode.AutoExpose)
-        didPressASM(1)
+        updateASM()
+        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -87,6 +105,10 @@ class MainViewController: AVCoreViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    @IBAction func didTapAlbumButton(sender: UIButton) {
+        self.performSegueWithIdentifier("cameraRollSegue", sender: self)
     }
     
     @IBAction func didPressTakePhoto(sender: AnyObject) {
@@ -149,11 +171,7 @@ class MainViewController: AVCoreViewController {
         }
     }
     
-    @IBAction func didPressASM(sender: AnyObject) {
-        print("Pressed ASM cycler")
-        if ++shootMode! > 2 {
-            shootMode = 0
-        }
+    func updateASM() {
         var buttonTitle = "A"
         switch shootMode {
         case 1:
@@ -185,7 +203,15 @@ class MainViewController: AVCoreViewController {
             toggleExposureValue(false)
         }
         asmButton.setTitle(buttonTitle, forState: .Normal)
-        //calcHistogram()
+    }
+    
+    @IBAction func didPressASM(sender: AnyObject) {
+        print("Pressed ASM cycler")
+        scrollView.hidden = true
+        if ++shootMode! > 2 {
+            shootMode = 0
+        }
+        updateASM()
     }
     
     
@@ -212,18 +238,65 @@ class MainViewController: AVCoreViewController {
     
     @IBAction func didPressEvButton(sender: UIButton) {
         println("Pressed EV")
+        if shootMode == 1 {
+            self.currentSetAttr = "EV"
+            initMeterView()
+        }
     }
     
     @IBAction func didPressIsoButton(sender: UIButton) {
         println("Pressed ISO")
+        if shootMode == 2 {
+            self.currentSetAttr = "ISO"
+            initMeterView()
+        }
     }
     
     @IBAction func didPressShutterButton(sender: UIButton) {
         println("Pressed Shutter")
+        if shootMode == 1 || shootMode == 2 {
+            self.currentSetAttr = "SS"
+            initMeterView()
+        }
     }
     
     @IBAction func didPressWBButton(sender: UIButton) {
         println("Pressed WB")
+    }
+    
+    func initMeterView() {
+        scrollView.hidden = false
+        meterCenter.hidden = false
+        //important for scroll view to work properly
+        scrollView.contentSize = meterView.frame.size
+    }
+    
+    func destroyMeterView() {
+        scrollView.hidden = true
+        meterCenter.hidden = true
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let height = meterView.frame.height
+        let scrollMax = scrollView.contentSize.height -
+            scrollView.frame.height
+        var scrollOffset = scrollView.contentOffset.y
+        if scrollOffset < 0 {
+            scrollOffset = 0
+        } else if scrollOffset > scrollMax {
+            scrollOffset = scrollMax
+        }
+        let value = Float(scrollOffset / scrollMax)
+        switch currentSetAttr {
+            case "EV":
+                changeEV(value)
+            case "ISO":
+                changeISO(value)
+            case "SS":
+                changeExposureDuration(value)
+            default:
+                let x = 1
+        }
     }
     
     override func postCalcHistogram() {
@@ -262,6 +335,50 @@ class MainViewController: AVCoreViewController {
             }
         }
     }
+    
+    /*
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        var cell = collectionView.dequeueReusableCellWithReuseIdentifier("barCell", forIndexPath: indexPath) as ControllCollectionViewCell
+        if currentSetAttr != nil {
+            switch currentSetAttr {
+            case "EV":
+                cell.valueLabel.text = String(indexPath.row)
+            case "ISO":
+                cell.valueLabel.text = String(indexPath.row)
+            case "SS":
+                cell.valueLabel.text = String(indexPath.row)
+            default:
+                cell.valueLabel.text = String(indexPath.row)
+            }
+        }
+        
+        return cell
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 25
+    }
+    
+    func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+        collectionView.hidden = true //hide the view
+    }
+    */
 
+    @IBAction func onTapPreview(sender: UITapGestureRecognizer) {
+        destroyMeterView()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "cameraRollSegue" {
+            let vcNav = segue.destinationViewController as? UINavigationController
+            if vcNav != nil {
+                let vc = vcNav!.viewControllers[0] as? CameraRollViewController
+                if vc != nil {
+                    vc!.lastImage = self.lastImage
+                }
+            }
+            
+        }
+    }
 }
 
