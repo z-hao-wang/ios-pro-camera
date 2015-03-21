@@ -12,12 +12,13 @@ import AssetsLibrary
 import QuartzCore
 
 
-class MainViewController: AVCoreViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     
     @IBOutlet weak var settingButton: UIButton!
     @IBOutlet weak var histogramView: HistogramView!
     
+    @IBOutlet weak var meterCenter: UIView!
     @IBOutlet weak var meterView: MeterView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var exposureDurationSlider: UISlider!
@@ -66,6 +67,7 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
         super.initialize()
         histogramView.opaque = false
         histogramView.backgroundColor = UIColor.clearColor()
+        scrollView.delegate = self
     }
     
     override func postInitilize() {
@@ -264,9 +266,37 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
     
     func initMeterView() {
         scrollView.hidden = false
-        meterView.frame = CGRectMake(0, 0, 45.0, 800.0)
+        meterCenter.hidden = false
+        //important for scroll view to work properly
         scrollView.contentSize = meterView.frame.size
-        meterView.setNeedsDisplay()
+    }
+    
+    func destroyMeterView() {
+        scrollView.hidden = true
+        meterCenter.hidden = true
+    }
+    
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        let height = meterView.frame.height
+        let scrollMax = scrollView.contentSize.height -
+            scrollView.frame.height
+        var scrollOffset = scrollView.contentOffset.y
+        if scrollOffset < 0 {
+            scrollOffset = 0
+        } else if scrollOffset > scrollMax {
+            scrollOffset = scrollMax
+        }
+        let value = Float(scrollOffset / scrollMax)
+        switch currentSetAttr {
+            case "EV":
+                changeEV(value)
+            case "ISO":
+                changeISO(value)
+            case "SS":
+                changeExposureDuration(value)
+            default:
+                let x = 1
+        }
     }
     
     override func postCalcHistogram() {
@@ -306,6 +336,7 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
         }
     }
     
+    /*
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         var cell = collectionView.dequeueReusableCellWithReuseIdentifier("barCell", forIndexPath: indexPath) as ControllCollectionViewCell
         if currentSetAttr != nil {
@@ -331,10 +362,10 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
     func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
         collectionView.hidden = true //hide the view
     }
-    
+    */
 
     @IBAction func onTapPreview(sender: UITapGestureRecognizer) {
-        
+        destroyMeterView()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

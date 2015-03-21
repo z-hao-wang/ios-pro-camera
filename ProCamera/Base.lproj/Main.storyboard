@@ -433,13 +433,13 @@
                                     <constraint firstItem="yVv-Od-sBa" firstAttribute="leading" secondItem="PJo-Gh-LCg" secondAttribute="leading" id="zyh-gy-brx"/>
                                 </constraints>
                             </view>
-                            <scrollView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A4j-dc-RKk">
+                            <scrollView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A4j-dc-RKk">
                                 <rect key="frame" x="476" y="0.0" width="45" height="320"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wUx-zo-Oa4" customClass="MeterView" customModule="ProCamera" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="45" height="1200"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="meter_test" translatesAutoresizingMaskIntoConstraints="NO" id="Khs-pu-C0Z">
+                                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="meter_test" translatesAutoresizingMaskIntoConstraints="NO" id="Khs-pu-C0Z">
                                                 <rect key="frame" x="0.0" y="-358" width="45" height="1200"/>
                                             </imageView>
                                         </subviews>
@@ -450,6 +450,14 @@
                                     <constraint firstAttribute="width" constant="45" id="7ov-4P-dtc"/>
                                 </constraints>
                             </scrollView>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ABQ-v2-RDY" userLabel="MeterCenter">
+                                <rect key="frame" x="475" y="158" width="48" height="2"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="48" id="VGe-dS-IDZ"/>
+                                    <constraint firstAttribute="height" constant="2" id="sCU-3k-vAm"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -460,10 +468,12 @@
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="e3K-PD-94R" secondAttribute="bottom" id="8t5-uk-oc5"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="A4j-dc-RKk" secondAttribute="trailing" id="IzZ-LW-cSi"/>
                             <constraint firstItem="Wkj-1h-woa" firstAttribute="leading" secondItem="e3K-PD-94R" secondAttribute="trailing" id="Ldx-Vr-EGM"/>
+                            <constraint firstAttribute="centerY" secondItem="ABQ-v2-RDY" secondAttribute="centerY" constant="1" id="Xae-dm-JAE"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="trailing" id="jKh-fN-2bC"/>
                             <constraint firstItem="e3K-PD-94R" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-16" id="jvP-po-AEr"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="A4j-dc-RKk" secondAttribute="bottom" id="lgD-rY-XYT"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="nd0-ml-cFN"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="ABQ-v2-RDY" secondAttribute="trailing" constant="29" id="oVD-Vl-YdQ"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="trailing" id="rPP-sx-bu8"/>
                             <constraint firstItem="Wkj-1h-woa" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="umd-Ey-IN5"/>
                             <constraint firstItem="A4j-dc-RKk" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="vjk-dy-ywV"/>
@@ -480,6 +490,7 @@
                         <outlet property="innerPhotoButton" destination="Lmo-tT-h0K" id="A5a-y9-jp5"/>
                         <outlet property="isoSlider" destination="lS9-V5-ybW" id="8oy-Yn-DeF"/>
                         <outlet property="isoValueLabel" destination="yVv-Od-sBa" id="iLx-5b-Gsr"/>
+                        <outlet property="meterCenter" destination="ABQ-v2-RDY" id="Evi-6J-pWz"/>
                         <outlet property="meterView" destination="wUx-zo-Oa4" id="HeZ-3z-F0X"/>
                         <outlet property="previewView" destination="Wkj-1h-woa" id="6yc-fZ-3Mf"/>
                         <outlet property="scrollView" destination="A4j-dc-RKk" id="56t-he-mfZ"/>
