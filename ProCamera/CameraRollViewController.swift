@@ -9,11 +9,18 @@
 import UIKit
 
 class CameraRollViewController: UIViewController {
+    var lastImage: UIImage!
 
+    @IBOutlet weak var imageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        imageView.image = lastImage
     }
 
     override func didReceiveMemoryWarning() {

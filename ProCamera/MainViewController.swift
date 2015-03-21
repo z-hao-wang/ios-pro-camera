@@ -14,6 +14,7 @@ import QuartzCore
 
 class MainViewController: AVCoreViewController {
     
+    @IBOutlet weak var settingButton: UIButton!
     @IBOutlet weak var histogramView: HistogramView!
     
     @IBOutlet weak var exposureDurationSlider: UISlider!
@@ -34,6 +35,8 @@ class MainViewController: AVCoreViewController {
     @IBOutlet weak var innerPhotoButton: UIView!
     
     @IBOutlet weak var previewView: UIView!
+    
+
     
     @IBOutlet weak var asmButton: UIButton!
     let enabledLabelColor = UIColor.yellowColor()
@@ -68,13 +71,21 @@ class MainViewController: AVCoreViewController {
         }
     }
     
+    override func supportedInterfaceOrientations() -> Int {
+        return Int(UIInterfaceOrientationMask.LandscapeLeft.rawValue)
+    }
+    
+    override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
     func initView() {
         previewView.layer.insertSublayer(super.previewLayer, atIndex: 0)
         previewLayer.frame = previewView.bounds
         //tmp
         setWhiteBalanceMode(.Temperature(5000))
         changeExposureMode(AVCaptureExposureMode.AutoExpose)
-        didPressASM(1)
+        updateASM()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -87,6 +98,10 @@ class MainViewController: AVCoreViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    @IBAction func didTapAlbumButton(sender: UIButton) {
+        self.performSegueWithIdentifier("cameraRollSegue", sender: self)
     }
     
     @IBAction func didPressTakePhoto(sender: AnyObject) {
@@ -149,11 +164,7 @@ class MainViewController: AVCoreViewController {
         }
     }
     
-    @IBAction func didPressASM(sender: AnyObject) {
-        print("Pressed ASM cycler")
-        if ++shootMode! > 2 {
-            shootMode = 0
-        }
+    func updateASM() {
         var buttonTitle = "A"
         switch shootMode {
         case 1:
@@ -185,7 +196,14 @@ class MainViewController: AVCoreViewController {
             toggleExposureValue(false)
         }
         asmButton.setTitle(buttonTitle, forState: .Normal)
-        //calcHistogram()
+    }
+    
+    @IBAction func didPressASM(sender: AnyObject) {
+        print("Pressed ASM cycler")
+        if ++shootMode! > 2 {
+            shootMode = 0
+        }
+        updateASM()
     }
     
     
@@ -262,6 +280,18 @@ class MainViewController: AVCoreViewController {
             }
         }
     }
-
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "cameraRollSegue" {
+            let vcNav = segue.destinationViewController as? UINavigationController
+            if vcNav != nil {
+                let vc = vcNav!.viewControllers[0] as? CameraRollViewController
+                if vc != nil {
+                    vc!.lastImage = self.lastImage
+                }
+            }
+            
+        }
+    }
 }
 
