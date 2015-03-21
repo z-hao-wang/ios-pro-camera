@@ -269,6 +269,11 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         meterCenter.hidden = false
         //important for scroll view to work properly
         scrollView.contentSize = meterView.frame.size
+        let value = getCurrentValueNormalized(currentSetAttr)
+        println(value)
+        let scrollMax = scrollView.contentSize.height -
+            scrollView.frame.height
+        scrollView.contentOffset.y = CGFloat(value) * scrollMax
     }
     
     func destroyMeterView() {
@@ -277,7 +282,6 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
-        let height = meterView.frame.height
         let scrollMax = scrollView.contentSize.height -
             scrollView.frame.height
         var scrollOffset = scrollView.contentOffset.y
