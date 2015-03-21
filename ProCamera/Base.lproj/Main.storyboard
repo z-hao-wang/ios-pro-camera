@@ -433,48 +433,23 @@
                                     <constraint firstItem="yVv-Od-sBa" firstAttribute="leading" secondItem="PJo-Gh-LCg" secondAttribute="leading" id="zyh-gy-brx"/>
                                 </constraints>
                             </view>
-                            <collectionView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="V0M-He-gGd">
+                            <scrollView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A4j-dc-RKk">
                                 <rect key="frame" x="476" y="0.0" width="45" height="320"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wUx-zo-Oa4" customClass="MeterView" customModule="ProCamera" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="45" height="1200"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="meter_test" translatesAutoresizingMaskIntoConstraints="NO" id="Khs-pu-C0Z">
+                                                <rect key="frame" x="0.0" y="-358" width="45" height="1200"/>
+                                            </imageView>
+                                        </subviews>
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    </view>
+                                </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="45" id="1Pm-Ro-pxC"/>
+                                    <constraint firstAttribute="width" constant="45" id="7ov-4P-dtc"/>
                                 </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Sna-TX-tC8">
-                                    <size key="itemSize" width="47.5" height="19"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="barCell" id="j95-Uw-LaX" customClass="ControllCollectionViewCell" customModule="ProCamera" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="47.5" height="19"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="500" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hh3-Nn-6Uh">
-                                                    <rect key="frame" x="2" y="-2" width="42" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="paC-kq-YjF">
-                                                    <rect key="frame" x="0.0" y="15" width="55" height="2"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                </view>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
-                                        <connections>
-                                            <outlet property="valueLabel" destination="Hh3-Nn-6Uh" id="R8G-Nt-fnJ"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                                <connections>
-                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="6Io-lD-bB5"/>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="w4v-Vm-Exc"/>
-                                </connections>
-                            </collectionView>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -483,22 +458,21 @@
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="PJo-Gh-LCg" secondAttribute="bottom" id="8Vk-wM-HUk"/>
                             <constraint firstItem="e3K-PD-94R" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="8iD-RT-nSa"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="e3K-PD-94R" secondAttribute="bottom" id="8t5-uk-oc5"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="V0M-He-gGd" secondAttribute="bottom" id="Hhs-L2-bI9"/>
+                            <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="A4j-dc-RKk" secondAttribute="trailing" id="IzZ-LW-cSi"/>
                             <constraint firstItem="Wkj-1h-woa" firstAttribute="leading" secondItem="e3K-PD-94R" secondAttribute="trailing" id="Ldx-Vr-EGM"/>
-                            <constraint firstItem="V0M-He-gGd" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="ULh-iS-DXQ"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="trailing" id="jKh-fN-2bC"/>
                             <constraint firstItem="e3K-PD-94R" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-16" id="jvP-po-AEr"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="A4j-dc-RKk" secondAttribute="bottom" id="lgD-rY-XYT"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="nd0-ml-cFN"/>
                             <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="Wkj-1h-woa" secondAttribute="trailing" id="rPP-sx-bu8"/>
-                            <constraint firstItem="PJo-Gh-LCg" firstAttribute="leading" secondItem="V0M-He-gGd" secondAttribute="trailing" id="swZ-xf-lVC"/>
                             <constraint firstItem="Wkj-1h-woa" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="umd-Ey-IN5"/>
+                            <constraint firstItem="A4j-dc-RKk" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="vjk-dy-ywV"/>
                         </constraints>
                     </view>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="albumButton" destination="nma-9s-AJf" id="5GV-12-xmY"/>
                         <outlet property="asmButton" destination="m9c-Ci-xSU" id="Tfn-cW-nwt"/>
-                        <outlet property="collectionView" destination="V0M-He-gGd" id="iaR-Cz-J0H"/>
                         <outlet property="evValue" destination="gnP-bi-XxL" id="KgV-X4-vFy"/>
                         <outlet property="exposureDurationSlider" destination="Smt-WG-miJ" id="HLS-a4-Qtk"/>
                         <outlet property="exposureValueSlider" destination="74U-5l-XTD" id="Pfv-Cr-5h8"/>
@@ -506,7 +480,9 @@
                         <outlet property="innerPhotoButton" destination="Lmo-tT-h0K" id="A5a-y9-jp5"/>
                         <outlet property="isoSlider" destination="lS9-V5-ybW" id="8oy-Yn-DeF"/>
                         <outlet property="isoValueLabel" destination="yVv-Od-sBa" id="iLx-5b-Gsr"/>
+                        <outlet property="meterView" destination="wUx-zo-Oa4" id="HeZ-3z-F0X"/>
                         <outlet property="previewView" destination="Wkj-1h-woa" id="6yc-fZ-3Mf"/>
+                        <outlet property="scrollView" destination="A4j-dc-RKk" id="56t-he-mfZ"/>
                         <outlet property="settingButton" destination="GCK-0n-4HT" id="EoW-QT-0Wi"/>
                         <outlet property="shutterSpeedLabel" destination="5hM-Jb-cIW" id="msB-Wu-SAD"/>
                         <outlet property="takePhotoButton" destination="9q3-TE-TKx" id="XoZ-JL-WpW"/>
@@ -751,6 +727,7 @@
     </scenes>
     <resources>
         <image name="gear" width="512" height="512"/>
+        <image name="meter_test" width="45" height="1200"/>
         <image name="wb_sunny copy" width="58" height="58"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

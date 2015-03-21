@@ -20,6 +20,7 @@
 		AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */; };
 		AF0FEFE81AAD1424000C8F6E /* SettingOptionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */; };
 		AF2434D81ABD570B000DB704 /* ControllCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2434D71ABD570B000DB704 /* ControllCollectionViewCell.swift */; };
+		AF2434DC1ABD6246000DB704 /* MeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2434DB1ABD6246000DB704 /* MeterView.swift */; };
 		AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */; };
 		AF6469B31AAFF7CB0078EA74 /* AVCoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */; };
 		AF76F6E41ABBC81C005FD80A /* HistogramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF76F6E31ABBC81C005FD80A /* HistogramView.swift */; };
@@ -59,6 +60,7 @@
 		AF0FEFE51AAD117C000C8F6E /* PresetTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresetTableViewCell.swift; sourceTree = "<group>"; };
 		AF0FEFE71AAD1424000C8F6E /* SettingOptionsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingOptionsTableViewCell.swift; sourceTree = "<group>"; };
 		AF2434D71ABD570B000DB704 /* ControllCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllCollectionViewCell.swift; sourceTree = "<group>"; };
+		AF2434DB1ABD6246000DB704 /* MeterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MeterView.swift; path = ../MeterView.swift; sourceTree = "<group>"; };
 		AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCoreViewController.swift; sourceTree = "<group>"; };
 		AF76F6E31ABBC81C005FD80A /* HistogramView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistogramView.swift; path = ../HistogramView.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				AF0FEFBB1AACC3E2000C8F6E /* AppDelegate.swift */,
 				D30432A11ABA6FB300AE4A9D /* CameraValueView.swift */,
 				AF0FEFBF1AACC3E2000C8F6E /* Main.storyboard */,
+				AF2434DB1ABD6246000DB704 /* MeterView.swift */,
 				AF76F6E31ABBC81C005FD80A /* HistogramView.swift */,
 				AF0FEFC21AACC3E2000C8F6E /* Images.xcassets */,
 				AF0FEFC41AACC3E2000C8F6E /* LaunchScreen.xib */,
@@ -281,6 +284,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF2434DC1ABD6246000DB704 /* MeterView.swift in Sources */,
 				AF0FEFBE1AACC3E2000C8F6E /* MainViewController.swift in Sources */,
 				AF0FEFE21AACD2C6000C8F6E /* PictureStyleViewController.swift in Sources */,
 				AF0FEFBC1AACC3E2000C8F6E /* AppDelegate.swift in Sources */,

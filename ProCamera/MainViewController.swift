@@ -14,10 +14,12 @@ import QuartzCore
 
 class MainViewController: AVCoreViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    @IBOutlet weak var collectionView: UICollectionView!
+    
     @IBOutlet weak var settingButton: UIButton!
     @IBOutlet weak var histogramView: HistogramView!
     
+    @IBOutlet weak var meterView: MeterView!
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var exposureDurationSlider: UISlider!
     @IBOutlet weak var exposureValueSlider: UISlider!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
@@ -56,7 +58,7 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
         asmButton.layer.borderColor = UIColor.grayColor().CGColor
         asmButton.layer.cornerRadius = (asmButton.bounds.size.height/2)
         shootMode = 0 //TODO: persist this
-        collectionView.hidden = true
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -88,6 +90,7 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
         setWhiteBalanceMode(.Temperature(5000))
         changeExposureMode(AVCaptureExposureMode.AutoExpose)
         updateASM()
+        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -202,7 +205,7 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
     
     @IBAction func didPressASM(sender: AnyObject) {
         print("Pressed ASM cycler")
-        collectionView.hidden = true
+        scrollView.hidden = true
         if ++shootMode! > 2 {
             shootMode = 0
         }
@@ -234,32 +237,36 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
     @IBAction func didPressEvButton(sender: UIButton) {
         println("Pressed EV")
         if shootMode == 1 {
-            collectionView.hidden = false
             self.currentSetAttr = "EV"
-            collectionView.reloadData()
+            initMeterView()
         }
     }
     
     @IBAction func didPressIsoButton(sender: UIButton) {
         println("Pressed ISO")
         if shootMode == 2 {
-            collectionView.hidden = false
             self.currentSetAttr = "ISO"
-            collectionView.reloadData()
+            initMeterView()
         }
     }
     
     @IBAction func didPressShutterButton(sender: UIButton) {
         println("Pressed Shutter")
         if shootMode == 1 || shootMode == 2 {
-            collectionView.hidden = false
             self.currentSetAttr = "SS"
-            collectionView.reloadData()
+            initMeterView()
         }
     }
     
     @IBAction func didPressWBButton(sender: UIButton) {
         println("Pressed WB")
+    }
+    
+    func initMeterView() {
+        scrollView.hidden = false
+        meterView.frame = CGRectMake(0, 0, 45.0, 800.0)
+        scrollView.contentSize = meterView.frame.size
+        meterView.setNeedsDisplay()
     }
     
     override func postCalcHistogram() {
@@ -298,6 +305,7 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
             }
         }
     }
+    
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         var cell = collectionView.dequeueReusableCellWithReuseIdentifier("barCell", forIndexPath: indexPath) as ControllCollectionViewCell
         if currentSetAttr != nil {
@@ -324,31 +332,9 @@ class MainViewController: AVCoreViewController, UICollectionViewDelegate, UIColl
         collectionView.hidden = true //hide the view
     }
     
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        let scrollMax = collectionView.contentSize.height -
-            collectionView.frame.height
-        var scrollOffset = collectionView.contentOffset.y
-        if scrollOffset < 0 {
-            scrollOffset = 0
-        } else if scrollOffset > scrollMax {
-            scrollOffset = scrollMax
-        }
-        let value = Float(scrollOffset / scrollMax)
-        println("Scrolled at percent: \(value)")
-        switch currentSetAttr {
-        case "EV":
-            changeEV(value)
-        case "ISO":
-            changeISO(value)
-        case "SS":
-            changeExposureDuration(value)
-        default:
-            let x = 1
-        }
-        
-    }
+
     @IBAction func onTapPreview(sender: UITapGestureRecognizer) {
-        collectionView.hidden = true
+        
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
