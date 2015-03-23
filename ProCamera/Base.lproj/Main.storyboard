@@ -392,10 +392,10 @@
                                             <action selector="didPressShutterButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="NCK-9C-L78"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xjr-H2-mfI" userLabel="WBButton">
-                                        <rect key="frame" x="2" y="245" width="45" height="45"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xjr-H2-mfI" userLabel="WBButton">
+                                        <rect key="frame" x="2" y="241" width="45" height="60"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="45" id="aM5-yX-nUT"/>
+                                            <constraint firstAttribute="height" constant="60" id="aM5-yX-nUT"/>
                                             <constraint firstAttribute="width" constant="45" id="z5e-Tj-Vxi"/>
                                         </constraints>
                                         <state key="normal">
@@ -503,6 +503,7 @@
                         <outlet property="shutterSpeedLabel" destination="5hM-Jb-cIW" id="msB-Wu-SAD"/>
                         <outlet property="takePhotoButton" destination="9q3-TE-TKx" id="XoZ-JL-WpW"/>
                         <outlet property="wbButton" destination="xjr-H2-mfI" id="CpK-eC-sIh"/>
+                        <outlet property="wbIconButton" destination="CBf-Us-axC" id="emT-nb-lGC"/>
                         <outlet property="whiteBalanceSlider" destination="5bU-FH-n8F" id="Cyv-PJ-4Ur"/>
                         <segue destination="UdI-Ij-diZ" kind="modal" identifier="cameraRollSegue" id="p67-rr-FYm"/>
                     </connections>
