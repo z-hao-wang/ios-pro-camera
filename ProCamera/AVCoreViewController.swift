@@ -64,6 +64,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var exposureValue: Float = 0.5 // EV
     var currentISOValue: Float?
     var currentExposureDuration: Float64?
+    var currentColorTemperature: AVCaptureWhiteBalanceTemperatureAndTintValues!
     var histogramFilter: CIFilter?
     var _captureSessionQueue: dispatch_queue_t?
     var currentOutput: AVCaptureOutput!
@@ -80,6 +81,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var histogramRaw: [Int] = Array(count: histogramBuckets, repeatedValue: 0)
     var configLocked: Bool = false
     var currentHistogramFrameCount: Int = 0
+    
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 4.0 //the exposure slider gain
@@ -223,11 +225,10 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         
         var mappedValue = value * 5000.0 + 3000.0 //map 0.0 - 1.0 to 3000 - 8000
         println("wb=\(value)")
-        var temperatureAndTint = AVCaptureWhiteBalanceTemperatureAndTintValues(temperature: mappedValue, tint: 0.0)
+        self.currentColorTemperature = AVCaptureWhiteBalanceTemperatureAndTintValues(temperature: mappedValue, tint: 0.0)
         if initialized {
-            setWhiteBalanceGains(videoDevice.deviceWhiteBalanceGainsForTemperatureAndTintValues(temperatureAndTint))
+            setWhiteBalanceGains(videoDevice.deviceWhiteBalanceGainsForTemperatureAndTintValues(self.currentColorTemperature))
         }
-        
     }
     
     // Normalize the gain so it does not exceed
@@ -349,6 +350,10 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             if currentExposureDuration != nil {
                 let val = Float((currentExposureDuration! - minDurationSeconds) / (maxDurationSeconds - minDurationSeconds))
                 ret = Float(sqrt(sqrt(val))) // Apply reverse power
+            }
+        } else if name == "WB" { //White balance
+            if self.currentColorTemperature != nil {
+                ret = (currentColorTemperature.temperature - 3000.0) / 500.0
             }
         }
         ret = min(ret, 1.0)

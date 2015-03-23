@@ -17,10 +17,11 @@ class MeterView: UIView {
         println("MeterView: drawRect \(rect)")
         let context = UIGraphicsGetCurrentContext()
         CGContextClearRect(context, rect)
-        let strokeWidth: CGFloat = 1.0
+        let strokeWidth: CGFloat = 2.0
+        let marginWidth: CGFloat = 4.0
         CGContextSetLineWidth(context, strokeWidth)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let components: [CGFloat] = [1.0, 1.0, 1.0, 0.8]
+        let components: [CGFloat] = [1.0, 1.0, 1.0, 0.9]
         let color = CGColorCreate(colorSpace, components)
         CGContextSetStrokeColorWithColor(context, color)
         //find max_pixels in histogramRaw
@@ -30,8 +31,8 @@ class MeterView: UIView {
         // Meter only takes half of total height
         for var i = 1; i < meterMarkCount; i++ {
             let y = CGFloat(i) * halfHeight / CGFloat(meterMarkCount) + halfHeight / 2.0
-            CGContextMoveToPoint(context, 0, y) //x = i, y = height
-            CGContextAddLineToPoint(context, rect.width, y)
+            CGContextMoveToPoint(context, marginWidth, y) //x = i, y = height
+            CGContextAddLineToPoint(context, rect.width - marginWidth, y)
         }
         CGContextStrokePath(context)
     }
