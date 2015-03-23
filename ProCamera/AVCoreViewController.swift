@@ -305,7 +305,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         //EV_max should be related to current exposure Duration
         let k: Float64 = (0.902639 - 25.0) / (1.0 / 1999.0 - 1.0 / 79.0)
         let b: Float64 = 25.0 - k / 79.0
-        EVMaxAdjusted = Float(k * Float64(currentExposureDuration ?? 0.01) + b)
+        EVMaxAdjusted = Float(k * Float64(currentExposureDuration!) + b)
         println("currentExposureDuration \(currentExposureDuration) EVAdjusted=\(EVMaxAdjusted), EV= \(exposureValue)")
     }
     
