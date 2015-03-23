@@ -14,13 +14,13 @@ import QuartzCore
 
 class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
-    
     @IBOutlet weak var settingButton: UIButton!
     @IBOutlet weak var histogramView: HistogramView!
     
     @IBOutlet weak var meterCenter: UIView!
     @IBOutlet weak var meterView: MeterView!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var gridView: GridView!
     @IBOutlet weak var exposureDurationSlider: UISlider!
     @IBOutlet weak var exposureValueSlider: UISlider!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
@@ -56,11 +56,17 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var wbIconButton: UIButton!
     
+    var gridEnabled: Bool = false
+    
     var scrollViewInitialX: CGFloat?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        let settingsValueTmp = NSUserDefaults.standardUserDefaults().objectForKey("settingsStore") as? [String: Bool]
+        settingsUpdated(settingsValueTmp)
+        //Listen to notif
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "settingsUpdatedObserver:", name: "settingsUpdatedNotification", object: nil)
         
         // Make the "take photo" button circular
         takePhotoButton.layer.cornerRadius = (takePhotoButton.bounds.size.height/2)
@@ -92,6 +98,23 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         }
         
         updateASM()
+    }
+    
+    func settingsUpdated(settingsVal: [String: Bool]!) {
+        if settingsVal != nil && settingsVal!["Grid"] != nil {
+            gridEnabled = settingsVal["Grid"]!
+            if gridEnabled {
+                //Set BG color to none
+                gridView.opaque = false
+                gridView.backgroundColor = UIColor.clearColor()
+            }
+            gridView.hidden = !gridEnabled
+        }
+    }
+    
+    func settingsUpdatedObserver(notification: NSNotification) {
+        let settingsVal = notification.userInfo as? [String: Bool]
+        settingsUpdated(settingsVal)
     }
     
     func scrollSwipedRight() {

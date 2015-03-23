@@ -19,7 +19,6 @@ class HistogramView: UIView {
         if histogramRaw != nil {
             let context = UIGraphicsGetCurrentContext()
             CGContextClearRect(context, rect)
-            CGContextSetLineWidth(context, strokeWidth - 2.0)
             let colorSpace = CGColorSpaceCreateDeviceRGB()
             let mainColorVal: [CGFloat] = [1.0, 1.0, 1.0, 0.8]
             let bgColorVal: [CGFloat] = [0.0, 0.0, 0.0, 0.2]

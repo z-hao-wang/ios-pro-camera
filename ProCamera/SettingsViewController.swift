@@ -51,7 +51,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     @IBAction func onClose(sender: UIButton) {
         dismissViewControllerAnimated(true, completion: { () -> Void in
-            
+            NSNotificationCenter.defaultCenter().postNotificationName("settingsUpdatedNotification", object: nil, userInfo: self.settingsValue)
         })
     }
     
