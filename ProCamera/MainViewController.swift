@@ -218,9 +218,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         case 1:
             buttonTitle = "Tv"
             changeExposureMode(.Custom)
-            changeExposureDuration(exposureDurationSlider.value)
-            changeEV(exposureValueSlider.value)
-            changeExposureDuration(exposureValueSlider.value)
+            changeExposureDuration(getCurrentValueNormalized("SS"))
+            changeEV(getCurrentValueNormalized("EV"))
             isoMode = .Auto
             toggleISO(false)
             toggleExposureDuration(true)
@@ -228,9 +227,9 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         case 2:
             buttonTitle = "M"
             changeExposureMode(.Custom)
-            changeExposureDuration(exposureDurationSlider.value)
+            changeExposureDuration(getCurrentValueNormalized("SS"))
             isoMode = .Custom
-            changeISO(isoSlider.value)
+            changeISO(getCurrentValueNormalized("ISO"))
             toggleISO(true)
             toggleExposureDuration(true)
             toggleExposureValue(false)
@@ -243,6 +242,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             toggleExposureDuration(false)
             toggleExposureValue(false)
         }
+        changeTemperature(getCurrentValueNormalized("WB"))
         asmButton.setTitle(buttonTitle, forState: .Normal)
     }
     
@@ -362,6 +362,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func initMeterView() {
+        let scrollViewAlpha: CGFloat = 0.6
         scrollView.hidden = false
         //kill scrolling if any
         let offset = scrollView.contentOffset
@@ -374,23 +375,29 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         let scrollMax = scrollView.contentSize.height -
             scrollView.frame.height
         scrollView.contentOffset.y = CGFloat(value) * scrollMax
-        //temp hide the image
+        
+        //Changing scrollView background to overlay style
+        scrollView.opaque = false
+        scrollView.backgroundColor = UIColor(white: 0.3, alpha: 0.5)
+        
+        //hide the image. Fixme: should remove the image from storyboard
         self.meterImage.hidden = true
         //self.meterImage.image = drawMeterImage()
-        meterView.opaque = false
-        meterView.backgroundColor = UIColor.clearColor()
+        
+        meterView.opaque = false //meter view is transparent
+        
         //meterView.frame = CGRectMake(0, 0, meterView.frame.width, 300.0)
         //meterView.bounds = meterView.frame
-        println("meterView: Frame \(meterView.bounds)")
-        meterView.setNeedsDisplay()
+        //println("meterView: Frame \(meterView.bounds)")
         
-        self.scrollView.alpha = 0
+        // To refresh the view, to call drawRect
+        meterView.setNeedsDisplay()
         
         scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
         self.scrollView.center.x = scrollViewInitialX! + 35.0
         UIView.animateWithDuration(0.25, delay: 0.0, usingSpringWithDamping: 0.5,
             initialSpringVelocity: 0.0, options: nil, animations: {
-            self.scrollView.alpha = 1.0
+            self.scrollView.alpha = scrollViewAlpha
             self.scrollView.center.x = self.scrollViewInitialX!
         }, completion: nil)
     }
