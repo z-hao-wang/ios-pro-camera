@@ -54,6 +54,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     @IBOutlet weak var isoButton: UIButton!
     @IBOutlet weak var evButton: UIButton!
     
+    @IBOutlet weak var wbIconButton: UIButton!
+    
     var scrollViewInitialX: CGFloat?
     
     override func viewDidLoad() {
@@ -89,6 +91,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             button.addGestureRecognizer(newRecognizer)
         }
         
+        updateASM()
     }
     
     func scrollSwipedRight() {
@@ -288,8 +291,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     func activateEvControl() {
         if shootMode == 1 {
-            self.currentSetAttr = "EV"
-            toggleMeterView()
+            onPressedControl("EV")
         }
     }
     
@@ -304,8 +306,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     func activateIsoControl() {
         if shootMode == 2 {
-            self.currentSetAttr = "ISO"
-            toggleMeterView()
+            onPressedControl("ISO")
         }
     }
     
@@ -320,8 +321,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     func activateShutterControl() {
         if shootMode == 1 || shootMode == 2 {
-            self.currentSetAttr = "SS"
-            toggleMeterView()
+            onPressedControl("SS")
         }
     }
     
@@ -335,8 +335,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func activateWbControl() {
-        self.currentSetAttr = "WB"
-        toggleMeterView()
+        println("Toggling wb")
+        onPressedControl("WB")
     }
     
     func updateHighlight() {
@@ -348,17 +348,38 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             case "EV":
                 evValue.textColor = currentlyEditedLabelColor
         default:
-            println("WB button")
+            wbIconButton.setImage(UIImage(named: "wb_sunny_yellow"), forState: UIControlState.Normal)
+        }
+        
+    }
+    
+    func onPressedControl(controlName: String) {
+        if (scrollView.hidden) {
+            self.currentSetAttr = controlName
+            openMeterView()
+        } else {
+            if (controlName == currentSetAttr) {
+                destroyMeterView()
+            } else {
+                closeMeterView({
+                    self.currentSetAttr = controlName
+                    self.openMeterView()
+                })
+            }
         }
     }
     
     func toggleMeterView() {
         if (scrollView.hidden) {
-            initMeterView()
-            updateHighlight()
+            openMeterView()
         } else {
             destroyMeterView()
         }
+    }
+    
+    func openMeterView() {
+        initMeterView()
+        updateHighlight()
     }
     
     func initMeterView() {
@@ -396,16 +417,25 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func destroyMeterView() {
+        closeMeterView({})
+    }
+    
+    func closeMeterView(completion: () -> Void) {
         self.meterCenter.hidden = true
         scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
+        println("current X is \(self.scrollView.center.x)")
+        self.scrollView.center.x = scrollViewInitialX!
+        println("Initial X is \(scrollViewInitialX)")
+        self.updateASM()
         UIView.animateWithDuration(0.25, delay: 0.0, usingSpringWithDamping: 0.5,
             initialSpringVelocity: 0.0, options: nil, animations: {
-            self.scrollView.alpha = 0.0
-            self.scrollView.center.x = self.scrollViewInitialX! + 35.0
-        }) { (isComplete: Bool) -> Void in
-            self.scrollView.hidden = true
+                self.scrollView.alpha = 0.0
+                self.scrollView.center.x = self.scrollViewInitialX! + 35.0
+            }) { (isComplete: Bool) -> Void in
+                self.scrollView.hidden = true
+                self.wbIconButton.setImage(UIImage(named: "wb_sunny copy"), forState: UIControlState.Normal)
+                completion()
         }
-        updateASM()
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
