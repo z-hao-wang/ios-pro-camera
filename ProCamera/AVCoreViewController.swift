@@ -45,7 +45,7 @@ extension Float {
 
 
 let histogramBuckets: Int = 16
-let histogramCalcIntervalFrames = 10 //every X frames, calc one histogram
+let histogramCalcIntervalFrames = 10 //calc one histogram every X frames
 
 class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
 
@@ -68,7 +68,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var histogramFilter: CIFilter?
     var _captureSessionQueue: dispatch_queue_t?
     var currentOutput: AVCaptureOutput!
-    var useStillImageOutput = true
+    var useStillImageOutput = true // Must force to true in order to take photo
     var histogramDataImage: CIImage!
     var histogramDisplayImage: UIImage!
     var shootMode: Int! //0 = Auto, 1 = Tv, 2= Manual
@@ -81,7 +81,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var histogramRaw: [Int] = Array(count: histogramBuckets, repeatedValue: 0)
     var configLocked: Bool = false
     var currentHistogramFrameCount: Int = 0
-    
+    var photoQuality: NSNumber = 1.0 //From 0.0 to 1.0
+    var usingJPEGOutput = true
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 4.0 //the exposure slider gain
@@ -116,7 +117,14 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                     }
                 
                     self.stillImageOutput = AVCaptureStillImageOutput()
-                    self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG]
+                    //using jpeg ourput
+                    if self.usingJPEGOutput {
+                        self.stillImageOutput.outputSettings = [AVVideoCodecKey: AVVideoCodecJPEG, AVVideoQualityKey: self.photoQuality]
+                    } else {
+                        //Try doing raw input
+                        self.stillImageOutput.outputSettings = [kCVPixelBufferPixelFormatTypeKey: kCVPixelFormatType_32BGRA]
+                    }
+                    
                     self.stillImageOutput.highResolutionStillImageOutputEnabled = true
                     self.currentOutput = self.stillImageOutput
                     
@@ -209,8 +217,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         }
         var temperatureValue = mode.getValue()
         if (temperatureValue > -1) {
-            //means not auto
-            changeTemperature(Float(temperatureValue))
+            //FixME: To add this feature
+            //changeTemperatureRaw(Float(temperatureValue))
         }
         lockConfig { () -> () in
             if self.videoDevice.isWhiteBalanceModeSupported(wbMode) {
@@ -221,11 +229,19 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         }
     }
     
+    //value: Take a normalized Value
     func changeTemperature(value: Float) {
-        
+        if value > 1.0 {
+            var x = 1.0
+            x = x + 3.0
+        }
         var mappedValue = value * 5000.0 + 3000.0 //map 0.0 - 1.0 to 3000 - 8000
-        println("wb=\(value)")
-        self.currentColorTemperature = AVCaptureWhiteBalanceTemperatureAndTintValues(temperature: mappedValue, tint: 0.0)
+        changeTemperatureRaw(mappedValue)
+    }
+    
+    //Take the actual temperature value
+    func changeTemperatureRaw(temperature: Float) {
+        self.currentColorTemperature = AVCaptureWhiteBalanceTemperatureAndTintValues(temperature: temperature, tint: 0.0)
         if initialized {
             setWhiteBalanceGains(videoDevice.deviceWhiteBalanceGainsForTemperatureAndTintValues(self.currentColorTemperature))
         }
@@ -353,7 +369,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             }
         } else if name == "WB" { //White balance
             if self.currentColorTemperature != nil {
-                ret = (currentColorTemperature.temperature - 3000.0) / 500.0
+                println("WB currentval = \(currentColorTemperature.temperature)")
+                ret = (currentColorTemperature.temperature - 3000.0) / 5000.0
             }
         }
         ret = min(ret, 1.0)
@@ -406,30 +423,37 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         theAudio.play()
     }
     
+    func takePhotoUsingStillImageOutput() {
+        // Must be initialized
+        if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
+            videoConnection.videoOrientation = AVCaptureVideoOrientation.LandscapeLeft
+            stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
+                if (sampleBuffer != nil) {
+                    if self.usingJPEGOutput {
+                        var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
+                        var dataProvider = CGDataProviderCreateWithCFData(imageData)
+                        var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
+                        self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
+                    } else {
+                        //Raw ouput
+                        
+                    }
+                    
+                    //save to camera roll
+                    self.beforeSavePhoto()
+                    UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
+                    self.postSavePhoto()
+                    //self.playShutterSound()
+                    println("Take Photo")
+                }
+            })
+        }
+    }
+    
     //save photo to camera roll
     func takePhoto() {
         if initialized {
-            if let videoConnection = currentOutput!.connectionWithMediaType(AVMediaTypeVideo) {
-                videoConnection.videoOrientation = AVCaptureVideoOrientation.Portrait
-                if useStillImageOutput {
-                    stillImageOutput?.captureStillImageAsynchronouslyFromConnection(videoConnection, completionHandler: {(sampleBuffer, error) in
-                        if (sampleBuffer != nil) {
-                            var imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(sampleBuffer)
-                            var dataProvider = CGDataProviderCreateWithCFData(imageData)
-                            var cgImageRef = CGImageCreateWithJPEGDataProvider(dataProvider, nil, true, kCGRenderingIntentDefault)
-                            self.lastImage = UIImage(CGImage: cgImageRef, scale: 1.0, orientation: UIImageOrientation.Right)
-                            //save to camera roll
-                            self.beforeSavePhoto()
-                            UIImageWriteToSavedPhotosAlbum(self.lastImage, nil, nil, nil)
-                            self.postSavePhoto()
-                            //self.playShutterSound()
-                            println("Take Photo")
-                        }
-                    })
-                } else {
-                    //using videoDataOutput
-                }
-            }
+            NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "takePhotoUsingStillImageOutput", userInfo: nil, repeats: false)
         } else {
             println("take photo failed. not initialized")
         }
