@@ -380,6 +380,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func destroyMeterView() {
+        scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
         UIView.animateWithDuration(0.25, animations: {
             self.scrollView.alpha = 0.0
             self.scrollView.center.x = self.scrollViewInitialX! + 50
