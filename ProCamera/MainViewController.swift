@@ -372,21 +372,23 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         self.scrollView.alpha = 0
         
         scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
-        self.scrollView.center.x = scrollViewInitialX! + 50.0
-        UIView.animateWithDuration(0.25, animations: {
+        self.scrollView.center.x = scrollViewInitialX! + 35.0
+        UIView.animateWithDuration(0.25, delay: 0.0, usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.0, options: nil, animations: {
             self.scrollView.alpha = 1.0
             self.scrollView.center.x = self.scrollViewInitialX!
-        })
+        }, completion: nil)
     }
     
     func destroyMeterView() {
+        self.meterCenter.hidden = true
         scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
-        UIView.animateWithDuration(0.25, animations: {
+        UIView.animateWithDuration(0.25, delay: 0.0, usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.0, options: nil, animations: {
             self.scrollView.alpha = 0.0
-            self.scrollView.center.x = self.scrollViewInitialX! + 50
+            self.scrollView.center.x = self.scrollViewInitialX! + 35.0
         }) { (isComplete: Bool) -> Void in
             self.scrollView.hidden = true
-            self.meterCenter.hidden = true
         }
 
     }
