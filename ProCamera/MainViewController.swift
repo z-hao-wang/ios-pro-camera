@@ -251,6 +251,9 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         if shootMode == 1 {
             self.currentSetAttr = "EV"
             initMeterView()
+            //special
+            //Adjust current EV value normalized
+            
         }
     }
     
@@ -387,7 +390,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
                 //map 0 - EV_MAX, to -3 - 3
                 // self.exposureValue / EV_MAX = x / 6.0
                 // x -= 3.0
-                let expoVal = self.exposureValue / self.EV_max * 6.0 - 3.0
+                let expoVal = self.exposureValue / self.EVMaxAdjusted * 6.0 - 3.0
                 self.evValue.text = expoVal.format(".1") //1 digit
             } else {
                 self.evValue.text = "Auto"

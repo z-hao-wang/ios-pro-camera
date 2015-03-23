@@ -73,7 +73,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var shootMode: Int! //0 = Auto, 1 = Tv, 2= Manual
     var lastHistogramEV: Double?
     var enableLastHistogramEV = false
-    var EV_max: Float = 15.0
+    var EVMax: Float = 15.0
+    var EVMaxAdjusted: Float = 15.0
     var gettingFrame: Bool = false
     var timer: dispatch_source_t!
     var histogramRaw: [Int] = Array(count: histogramBuckets, repeatedValue: 0)
@@ -295,11 +296,27 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         }
     }
     
+    //Only adjust max EV but does not chang EV value
+    func adjustMaxEV() {
+        // EV Mapping
+        // 1/129 s = 0 - 15
+        // 1/79 s = 0 - 25
+        // 1/1999 = 0 - 0.902639
+        //EV_max should be related to current exposure Duration
+        let k: Float64 = (0.902639 - 25.0) / (1.0 / 1999.0 - 1.0 / 79.0)
+        let b: Float64 = 25.0 - k / 79.0
+        EVMaxAdjusted = Float(k * Float64(currentExposureDuration!) + b)
+        println("currentExposureDuration \(currentExposureDuration) EVAdjusted=\(EVMaxAdjusted), EV= \(exposureValue)")
+    }
+    
     func changeEV(value: Float) {
-        exposureValue = value * EV_max
+        adjustMaxEV()
+        exposureValue = value * EVMaxAdjusted
+        
+        
         //This is to try autoadjustEV based on histogram exposure. but doesn't seem to work well due to infinite feedback loop
         if lastHistogramEV != nil && self.enableLastHistogramEV {
-            let evPercent = exposureValue / EV_max
+            let evPercent = exposureValue / EVMax
             if lastHistogramEV! < 5000.0 && evPercent > 0.3 { //When EV is not too low but exposure is too low
                 // Under Exposure. Make EV_max Larger
                 exposureValue += Float(lastHistogramEV!) / 2500.0 // + from 0 to 10
@@ -318,21 +335,25 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
     
     func getCurrentValueNormalized(name: String) -> Float! {
+        var ret: Float = 0.5
         if name == "EV" {
-            return exposureValue / EV_max
+            adjustMaxEV()
+            ret = exposureValue / EVMaxAdjusted
         } else if name == "ISO" {
             if currentISOValue != nil {
-                return (currentISOValue! - self.videoDevice.activeFormat.minISO) /  (self.videoDevice.activeFormat.maxISO - self.videoDevice.activeFormat.minISO)
+                ret = (currentISOValue! - self.videoDevice.activeFormat.minISO) /  (self.videoDevice.activeFormat.maxISO - self.videoDevice.activeFormat.minISO)
             }
         } else if name == "SS"{ //shuttle speed
             let minDurationSeconds = Float64(max(CMTimeGetSeconds(videoDevice.activeFormat.minExposureDuration), EXPOSURE_MINIMUM_DURATION))
             let maxDurationSeconds = Float64(CMTimeGetSeconds(self.videoDevice.activeFormat.maxExposureDuration))
             if currentExposureDuration != nil {
                 let val = Float((currentExposureDuration! - minDurationSeconds) / (maxDurationSeconds - minDurationSeconds))
-                return Float(sqrt(sqrt(val))) // Apply reverse power
+                ret = Float(sqrt(sqrt(val))) // Apply reverse power
             }
         }
-        return 0.5
+        ret = min(ret, 1.0)
+        ret = max(ret, 0.0)
+        return ret
     }
     
     func capISO(value: Float) -> Float {
