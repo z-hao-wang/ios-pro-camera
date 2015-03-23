@@ -35,12 +35,13 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        let settingsValue = NSUserDefaults.standardUserDefaults().objectForKey("settingsStore") as? [String: Bool]
-        if settingsValue != nil {
-            self.settingsValue = settingsValue!
+        let settingsValueTmp = NSUserDefaults.standardUserDefaults().objectForKey("settingsStore") as? [String: Bool]
+        if settingsValueTmp != nil {
+            settingsValue = settingsValueTmp!
+        } else {
+            settingsValue = [String: Bool]()
         }
         println("\(settingsValue) View did load")
-        
     }
 
     override func didReceiveMemoryWarning() {

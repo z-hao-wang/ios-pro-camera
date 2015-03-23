@@ -21,8 +21,10 @@ class HistogramView: UIView {
             CGContextClearRect(context, rect)
             CGContextSetLineWidth(context, strokeWidth - 2.0)
             let colorSpace = CGColorSpaceCreateDeviceRGB()
-            let components: [CGFloat] = [1.0, 1.0, 1.0, 1.0]
-            let color = CGColorCreate(colorSpace, components)
+            let mainColorVal: [CGFloat] = [1.0, 1.0, 1.0, 0.8]
+            let bgColorVal: [CGFloat] = [0.0, 0.0, 0.0, 0.2]
+            let bgColor = CGColorCreate(colorSpace, bgColorVal)
+            let color = CGColorCreate(colorSpace, mainColorVal)
             CGContextSetStrokeColorWithColor(context, color)
             //find max_pixels in histogramRaw
             var max_pixels = histogramRaw[0]
@@ -31,6 +33,10 @@ class HistogramView: UIView {
                     max_pixels = histogramRaw[i]
                 }
             }
+            
+            //draw BG
+            CGContextSetLineWidth(context, strokeWidth + 2.0)
+            CGContextSetStrokeColorWithColor(context, bgColor)
             //map max_pixels to rect.height
             // height = x / max_pixels * rect.height
             for var i = 0; i < histogramRaw.count; i++ {
@@ -38,8 +44,25 @@ class HistogramView: UIView {
                 if value_height < 1.0 {
                     value_height = 1.0 //min height = 1.0
                 }
-                CGContextMoveToPoint(context, CGFloat(i) * strokeWidth + strokeWidth / 2.0, rect.height) //x = i, y = height
-                CGContextAddLineToPoint(context, CGFloat(i) * strokeWidth + strokeWidth / 2.0, rect.height - value_height) //x = i, y = height - value_height
+                CGContextMoveToPoint(context, CGFloat(i) * strokeWidth + strokeWidth / 2.0 , rect.height) //x = i, y = height
+                CGContextAddLineToPoint(context, CGFloat(i) * strokeWidth + strokeWidth / 2.0, rect.height - value_height - 2.0) //x = i, y = height - value_height
+            }
+            CGContextStrokePath(context)
+            //Draw bar
+            CGContextSetLineWidth(context, strokeWidth - 2.0)
+            CGContextSetStrokeColorWithColor(context, color)
+
+            for var i = 0; i < histogramRaw.count; i++ {
+                var value_height = CGFloat(histogramRaw[i]) / CGFloat(max_pixels) * CGFloat(rect.height)
+                if value_height < 1.0 {
+                    value_height = 1.0 //min height = 1.0
+                }
+                CGContextMoveToPoint(context, CGFloat(i) * strokeWidth + strokeWidth / 2.0, rect.height - 2.0) //x = i, y = height
+                var heightTo = rect.height - value_height
+                if heightTo <= 2.0 {
+                    heightTo = 2.0
+                }
+                CGContextAddLineToPoint(context, CGFloat(i) * strokeWidth + strokeWidth / 2.0, heightTo) //x = i, y = height - value_height
             }
             CGContextStrokePath(context)
         }

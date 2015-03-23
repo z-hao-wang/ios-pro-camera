@@ -82,7 +82,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     // Some default settings
     let EXPOSURE_DURATION_POWER:Float = 4.0 //the exposure slider gain
-    let EXPOSURE_MINIMUM_DURATION:Float64 = 1.0/1000.0
+    let EXPOSURE_MINIMUM_DURATION:Float64 = 1.0/2000.0
     
     func initialize() {
         if !initialized {
