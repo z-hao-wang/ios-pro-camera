@@ -44,8 +44,9 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
 
     
     @IBOutlet weak var asmButton: UIButton!
-    let enabledLabelColor = UIColor.yellowColor()
-    let disabledLabelColor = UIColor.whiteColor()
+    let enabledLabelColor = UIColor.whiteColor()
+    let disabledLabelColor = UIColor.grayColor()
+    let currentlyEditedLabelColor = UIColor.yellowColor()
     
     // Setting buttons
     @IBOutlet weak var wbButton: UIButton!
@@ -212,7 +213,6 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func updateASM() {
-        destroyMeterView()
         var buttonTitle = "A"
         switch shootMode {
         case 1:
@@ -253,6 +253,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             shootMode = 0
         }
         updateASM()
+        destroyMeterView()
     }
     
     
@@ -338,9 +339,23 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         toggleMeterView()
     }
     
+    func updateHighlight() {
+        switch currentSetAttr {
+            case "ISO":
+                isoValueLabel.textColor = currentlyEditedLabelColor
+            case "SS":
+                shutterSpeedLabel.textColor = currentlyEditedLabelColor
+            case "EV":
+                evValue.textColor = currentlyEditedLabelColor
+        default:
+            println("WB button")
+        }
+    }
+    
     func toggleMeterView() {
         if (scrollView.hidden) {
             initMeterView()
+            updateHighlight()
         } else {
             destroyMeterView()
         }
@@ -390,7 +405,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         }) { (isComplete: Bool) -> Void in
             self.scrollView.hidden = true
         }
-
+        updateASM()
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
