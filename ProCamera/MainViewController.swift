@@ -44,8 +44,17 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
 
     
     @IBOutlet weak var asmButton: UIButton!
-    let enabledLabelColor = UIColor.yellowColor()
-    let disabledLabelColor = UIColor.whiteColor()
+    let enabledLabelColor = UIColor.whiteColor()
+    let disabledLabelColor = UIColor.grayColor()
+    let currentlyEditedLabelColor = UIColor.yellowColor()
+    
+    // Setting buttons
+    @IBOutlet weak var wbButton: UIButton!
+    @IBOutlet weak var shutterButton: UIButton!
+    @IBOutlet weak var isoButton: UIButton!
+    @IBOutlet weak var evButton: UIButton!
+    
+    var scrollViewInitialX: CGFloat?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,8 +70,32 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         asmButton.layer.cornerRadius = (asmButton.bounds.size.height/2)
         shootMode = 0 //TODO: persist this
         
+        // Handle swiping on scroll view to hide
+        var recognizer: UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: "scrollSwipedRight")
+        self.scrollView.addGestureRecognizer(recognizer)
+        recognizer.direction = UISwipeGestureRecognizerDirection.Right;
+        self.scrollView.delaysContentTouches = true
+        
+        let buttonTypesForGestures = [
+            "didSwipeWbButton": wbButton,
+            "didSwipeEvButton": evButton,
+            "didSwipeIsoButton": isoButton,
+            "didSwipeShutterButton": shutterButton
+        ]
+        
+        for (action, button) in buttonTypesForGestures {
+            var newRecognizer: UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: Selector(action))
+            newRecognizer.direction = UISwipeGestureRecognizerDirection.Left;
+            button.addGestureRecognizer(newRecognizer)
+        }
+        
     }
     
+    func scrollSwipedRight() {
+        println("Scroll swiped right")
+        destroyMeterView()
+    }
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         super.initialize()
@@ -93,7 +126,6 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         setWhiteBalanceMode(.Temperature(5000))
         changeExposureMode(AVCaptureExposureMode.AutoExpose)
         updateASM()
-        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -181,7 +213,6 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     func updateASM() {
-        destroyMeterView()
         var buttonTitle = "A"
         switch shootMode {
         case 1:
@@ -222,6 +253,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             shootMode = 0
         }
         updateASM()
+        destroyMeterView()
     }
     
     
@@ -246,37 +278,87 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         changeEV(sender.value)
     }
     
+    func didSwipeEvButton() {
+        activateEvControl()
+    }
+    
     @IBAction func didPressEvButton(sender: UIButton) {
-        println("Pressed EV")
+        activateEvControl()
+    }
+    
+    func activateEvControl() {
         if shootMode == 1 {
             self.currentSetAttr = "EV"
-            initMeterView()
-            //special
-            //Adjust current EV value normalized
-            
+            toggleMeterView()
         }
+    }
+    
+    func didSwipeIsoButton() {
+        activateIsoControl()
     }
     
     @IBAction func didPressIsoButton(sender: UIButton) {
         println("Pressed ISO")
+        activateIsoControl()
+    }
+    
+    func activateIsoControl() {
         if shootMode == 2 {
             self.currentSetAttr = "ISO"
-            initMeterView()
+            toggleMeterView()
         }
+    }
+    
+    func didSwipeShutterButton() {
+        activateShutterControl()
     }
     
     @IBAction func didPressShutterButton(sender: UIButton) {
         println("Pressed Shutter")
+        activateShutterControl()
+    }
+    
+    func activateShutterControl() {
         if shootMode == 1 || shootMode == 2 {
             self.currentSetAttr = "SS"
-            initMeterView()
+            toggleMeterView()
         }
+    }
+    
+    func didSwipeWbButton() {
+        activateWbControl()
     }
     
     @IBAction func didPressWBButton(sender: UIButton) {
         println("Pressed WB")
+        activateWbControl()
+    }
+    
+    func activateWbControl() {
         self.currentSetAttr = "WB"
-        initMeterView()
+        toggleMeterView()
+    }
+    
+    func updateHighlight() {
+        switch currentSetAttr {
+            case "ISO":
+                isoValueLabel.textColor = currentlyEditedLabelColor
+            case "SS":
+                shutterSpeedLabel.textColor = currentlyEditedLabelColor
+            case "EV":
+                evValue.textColor = currentlyEditedLabelColor
+        default:
+            println("WB button")
+        }
+    }
+    
+    func toggleMeterView() {
+        if (scrollView.hidden) {
+            initMeterView()
+            updateHighlight()
+        } else {
+            destroyMeterView()
+        }
     }
     
     func initMeterView() {
@@ -301,40 +383,29 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         //meterView.bounds = meterView.frame
         println("meterView: Frame \(meterView.bounds)")
         meterView.setNeedsDisplay()
+        
+        self.scrollView.alpha = 0
+        
+        scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
+        self.scrollView.center.x = scrollViewInitialX! + 35.0
+        UIView.animateWithDuration(0.25, delay: 0.0, usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.0, options: nil, animations: {
+            self.scrollView.alpha = 1.0
+            self.scrollView.center.x = self.scrollViewInitialX!
+        }, completion: nil)
     }
     
-    /*
-    func drawMeterImage () -> UIImage! {
-        let size = CGSizeMake(45.0, 600.0)
-        // Setup our context
-        let bounds = CGRect(origin: CGPoint.zeroPoint, size: size)
-        let opaque = false
-        let scale: CGFloat = 0
-        UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
-        let context = UIGraphicsGetCurrentContext()
-        
-        // Setup complete, do drawing here
-        CGContextSetStrokeColorWithColor(context, UIColor.redColor().CGColor)
-        CGContextSetLineWidth(context, 2.0)
-        
-        CGContextStrokeRect(context, bounds)
-        
-        CGContextBeginPath(context)
-        CGContextMoveToPoint(context, CGRectGetMinX(bounds), CGRectGetMinY(bounds))
-        CGContextAddLineToPoint(context, CGRectGetMaxX(bounds), CGRectGetMaxY(bounds))
-        CGContextMoveToPoint(context, CGRectGetMaxX(bounds), CGRectGetMinY(bounds))
-        CGContextAddLineToPoint(context, CGRectGetMinX(bounds), CGRectGetMaxY(bounds))
-        CGContextStrokePath(context)
-        
-        // Drawing complete, retrieve the finished image and cleanup
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
-    }*/
-    
     func destroyMeterView() {
-        scrollView.hidden = true
-        meterCenter.hidden = true
+        self.meterCenter.hidden = true
+        scrollViewInitialX = scrollViewInitialX ?? self.scrollView.center.x
+        UIView.animateWithDuration(0.25, delay: 0.0, usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.0, options: nil, animations: {
+            self.scrollView.alpha = 0.0
+            self.scrollView.center.x = self.scrollViewInitialX! + 35.0
+        }) { (isComplete: Bool) -> Void in
+            self.scrollView.hidden = true
+        }
+        updateASM()
     }
     
     func scrollViewDidScroll(scrollView: UIScrollView) {
