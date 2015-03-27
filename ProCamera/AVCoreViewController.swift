@@ -64,6 +64,8 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     var exposureValue: Float = 0.5 // EV
     var currentISOValue: Float?
     var currentExposureDuration: Float64?
+    var currentScale: CGFloat = 1.0
+    var tempScale: CGFloat = 1.0
     var currentColorTemperature: AVCaptureWhiteBalanceTemperatureAndTintValues!
     var histogramFilter: CIFilter?
     var _captureSessionQueue: dispatch_queue_t?
@@ -113,7 +115,7 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                     self.videoDataOutput.setSampleBufferDelegate(self, queue: self._captureSessionQueue)
                     
                     if self.captureSession.canAddOutput(self.videoDataOutput) {
-                        self.captureSession.addOutput(self.videoDataOutput) //add output
+                        self.captureSession.addOutput(self.videoDataOutput) //add Video output
                     }
                 
                     self.stillImageOutput = AVCaptureStillImageOutput()
@@ -139,6 +141,9 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                             self.postInitilize()
                         })
                     }
+                    
+                   
+                    
                     return ()
                     //TODO: send notification
                 }
@@ -324,6 +329,30 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         let b: Float64 = 25.0 - k / 79.0
         EVMaxAdjusted = Float(k * Float64(currentExposureDuration!) + b)
         println("currentExposureDuration \(currentExposureDuration) EVAdjusted=\(EVMaxAdjusted), EV= \(exposureValue)")
+    }
+    
+    func zoomVideoOutput(scale: CGFloat) {
+        tempScale = currentScale * scale
+        tempScale = max(tempScale, 1.0)
+        tempScale = min(tempScale, 4.0) //Max zoom 4x
+        //This is for photo taken
+        /*if let stillImageConnection = stillImageOutput!.connectionWithMediaType(AVMediaTypeVideo) {
+            
+            tempScale = min(tempScale, stillImageConnection.videoMaxScaleAndCropFactor)
+            stillImageConnection.videoScaleAndCropFactor = tempScale
+        }*/
+        //this is for preview zoom
+        /*println("currentScale=\(tempScale)")
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.25)
+        previewLayer.setAffineTransform(CGAffineTransformMakeScale(tempScale, tempScale))
+        CATransaction.commit()
+        */
+        if videoDevice.respondsToSelector("videoZoomFactor") && videoDevice.activeFormat.videoMaxZoomFactor > tempScale {
+            lockConfig { () -> () in
+                self.videoDevice.videoZoomFactor = self.tempScale
+            }
+        }
     }
     
     func changeEV(value: Float) {
