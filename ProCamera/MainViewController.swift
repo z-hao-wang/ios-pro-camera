@@ -25,7 +25,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     @IBOutlet weak var exposureValueSlider: UISlider!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
     @IBOutlet weak var isoValueLabel: UILabel!
-    @IBOutlet weak var albumButton: UIImageView!
+  
+    @IBOutlet weak var albumButton: UIButton!
     @IBOutlet weak var flashBtn: UIButton!
     @IBOutlet weak var controllView: UIView!
     @IBOutlet weak var whiteBalanceSlider: UISlider!
@@ -98,6 +99,30 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         }
         
         updateASM()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "didDeviceRotate", name: UIDeviceOrientationDidChangeNotification, object: nil)
+    }
+    
+    func didDeviceRotate() {
+        let orientation = UIDevice.currentDevice().orientation
+        println(orientation)
+        if orientation == .Portrait || orientation == .PortraitUpsideDown {
+            //portrait
+            setTextRotation(0.0)
+        } else if orientation == .LandscapeLeft {
+            //Landscape
+            setTextRotation(90.0)
+        } else if orientation == .LandscapeRight {
+            setTextRotation(-90.0)
+        }
+    }
+    
+    func setTextRotation(rotation: CGFloat) {
+        let transform = CGAffineTransformMakeRotation(rotation * CGFloat(M_PI) / 180.0)
+        UIView.animateWithDuration(0.5, animations: { () -> Void in
+            self.asmButton.transform = transform
+
+        })
     }
     
     func settingsUpdated(settingsVal: [String: Bool]!) {
@@ -129,6 +154,9 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         histogramView.backgroundColor = UIColor.clearColor()
         scrollView.delegate = self
     }
+    override func prefersStatusBarHidden() -> Bool {
+        return true
+    }
     
     override func postInitilize() {
         super.postInitilize()
@@ -138,7 +166,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     override func supportedInterfaceOrientations() -> Int {
-        return Int(UIInterfaceOrientationMask.LandscapeLeft.rawValue)
+        return Int(UIInterfaceOrientationMask.Portrait.rawValue)
     }
     
     override func shouldAutorotate() -> Bool {
@@ -512,7 +540,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     override func beforeSavePhoto() {
         super.beforeSavePhoto()
-        albumButton.image = lastImage
+        albumButton.setImage(lastImage, forState: .Normal)
     }
     
     override func postChangeCameraSetting() {
