@@ -190,11 +190,16 @@
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="t3S-Zz-7J8" appends="YES" id="CmT-9g-IFs"/>
+                                    <outletCollection property="gestureRecognizers" destination="Rqf-l9-U4R" appends="YES" id="P3a-0S-KzM"/>
                                 </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iO9-Xr-LPI" userLabel="GridView" customClass="GridView" customModule="ProCamera" customModuleProvider="target">
                                 <rect key="frame" x="90" y="0.0" width="431" height="320"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="bGL-xw-Sht" appends="YES" id="qyu-OR-C2Y"/>
+                                </connections>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="e3K-PD-94R" userLabel="Main Menu Bar">
                                 <rect key="frame" x="0.0" y="0.0" width="90" height="320"/>
@@ -529,6 +534,16 @@
                         <action selector="onTapPreview:" destination="BYZ-38-t0r" id="PM5-Xe-ib0"/>
                     </connections>
                 </tapGestureRecognizer>
+                <pinchGestureRecognizer id="bGL-xw-Sht">
+                    <connections>
+                        <action selector="didZoom:" destination="BYZ-38-t0r" id="wyV-ky-0LZ"/>
+                    </connections>
+                </pinchGestureRecognizer>
+                <pinchGestureRecognizer id="Rqf-l9-U4R">
+                    <connections>
+                        <action selector="didZoom:" destination="BYZ-38-t0r" id="ASp-zj-BiX"/>
+                    </connections>
+                </pinchGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="582" y="367"/>
         </scene>

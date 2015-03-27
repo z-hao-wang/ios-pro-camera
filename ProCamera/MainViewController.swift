@@ -174,6 +174,19 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         takePhoto()
         beforeSavePhoto()
     }
+    @IBAction func didZoom(sender: UIPinchGestureRecognizer) {
+        var scale = sender.scale
+        println(scale)
+        //TODO: Detect all touches are in preview layer
+        if sender.state == UIGestureRecognizerState.Began {
+            
+        } else if sender.state == UIGestureRecognizerState.Changed {
+            zoomVideoOutput(scale)
+        } else if sender.state == UIGestureRecognizerState.Ended {
+            currentScale = tempScale
+        }
+        
+    }
     
     func toggleISO(enabled: Bool) {
         if enabled {
