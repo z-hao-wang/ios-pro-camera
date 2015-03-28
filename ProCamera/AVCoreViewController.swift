@@ -482,7 +482,9 @@ class AVCoreViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     //save photo to camera roll
     func takePhoto() {
         if initialized {
-            NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "takePhotoUsingStillImageOutput", userInfo: nil, repeats: false)
+            // Was trying to use timer but did not do anything useful
+            // NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "takePhotoUsingStillImageOutput", userInfo: nil, repeats: false)
+            takePhotoUsingStillImageOutput()
         } else {
             println("take photo failed. not initialized")
         }

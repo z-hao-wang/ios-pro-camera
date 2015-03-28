@@ -22,6 +22,7 @@
 		AF1E8B1B1ABFE8CA004CB34A /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1E8B1A1ABFE8CA004CB34A /* GridView.swift */; };
 		AF2434D81ABD570B000DB704 /* ControllCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2434D71ABD570B000DB704 /* ControllCollectionViewCell.swift */; };
 		AF2434DC1ABD6246000DB704 /* MeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2434DB1ABD6246000DB704 /* MeterView.swift */; };
+		AF5C7FCD1AC5FABD009B01CB /* CustomNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF5C7FCC1AC5FABD009B01CB /* CustomNavigationViewController.swift */; };
 		AF6469B11AAFDD2A0078EA74 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */; };
 		AF6469B31AAFF7CB0078EA74 /* AVCoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */; };
 		AF76F6E41ABBC81C005FD80A /* HistogramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF76F6E31ABBC81C005FD80A /* HistogramView.swift */; };
@@ -63,6 +64,7 @@
 		AF1E8B1A1ABFE8CA004CB34A /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		AF2434D71ABD570B000DB704 /* ControllCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllCollectionViewCell.swift; sourceTree = "<group>"; };
 		AF2434DB1ABD6246000DB704 /* MeterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MeterView.swift; path = ../MeterView.swift; sourceTree = "<group>"; };
+		AF5C7FCC1AC5FABD009B01CB /* CustomNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomNavigationViewController.swift; sourceTree = "<group>"; };
 		AF6469B01AAFDD2A0078EA74 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCoreViewController.swift; sourceTree = "<group>"; };
 		AF76F6E31ABBC81C005FD80A /* HistogramView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HistogramView.swift; path = ../HistogramView.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				AF0FEFBD1AACC3E2000C8F6E /* MainViewController.swift */,
 				AF6469B21AAFF7CB0078EA74 /* AVCoreViewController.swift */,
 				AFC0F2461AB1535800F05B46 /* CameraRollViewController.swift */,
+				AF5C7FCC1AC5FABD009B01CB /* CustomNavigationViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 				AFC0F2471AB1535800F05B46 /* CameraRollViewController.swift in Sources */,
 				AF0FEFDF1AACCED6000C8F6E /* SettingBoolTableViewCell.swift in Sources */,
 				AF6469B31AAFF7CB0078EA74 /* AVCoreViewController.swift in Sources */,
+				AF5C7FCD1AC5FABD009B01CB /* CustomNavigationViewController.swift in Sources */,
 				AF2434D81ABD570B000DB704 /* ControllCollectionViewCell.swift in Sources */,
 				AF0FEFE61AAD117C000C8F6E /* PresetTableViewCell.swift in Sources */,
 				AF0FEFE41AACD37E000C8F6E /* PictureStyleTableViewCell.swift in Sources */,

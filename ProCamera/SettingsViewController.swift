@@ -21,11 +21,11 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var tableView: UITableView!
     
     override func supportedInterfaceOrientations() -> Int {
-        return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)
+        return Int(UIInterfaceOrientationMask.Portrait.rawValue)
     }
     
     override func shouldAutorotate() -> Bool {
-        return true
+        return false
     }
     
     override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {

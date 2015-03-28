@@ -21,18 +21,19 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     @IBOutlet weak var meterView: MeterView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var gridView: GridView!
-    @IBOutlet weak var exposureDurationSlider: UISlider!
-    @IBOutlet weak var exposureValueSlider: UISlider!
     @IBOutlet weak var shutterSpeedLabel: UILabel!
     @IBOutlet weak var isoValueLabel: UILabel!
     @IBOutlet weak var albumButton: UIImageView!
-    @IBOutlet weak var flashBtn: UIButton!
-    @IBOutlet weak var controllView: UIView!
-    @IBOutlet weak var whiteBalanceSlider: UISlider!
+    
+    // Containers. For rotation purpose
+    @IBOutlet weak var evContainer: UIView!
+    @IBOutlet weak var isoContainer: UIView!
+    @IBOutlet weak var shutterContainer: UIView!
+    @IBOutlet weak var wbContainer: UIView!
+    
     var viewAppeared = false
     
     @IBOutlet weak var meterImage: UIImageView!
-    @IBOutlet weak var isoSlider: UISlider!
     
     @IBOutlet weak var evValue: UILabel!
     @IBOutlet weak var takePhotoButton: UIButton!
@@ -56,6 +57,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var wbIconButton: UIButton!
     
+    var viewDidAppeared: Bool = false
     var gridEnabled: Bool = false
     
     var scrollViewInitialX: CGFloat?
@@ -98,6 +100,80 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         }
         
         updateASM()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "didDeviceRotateAnimated", name: UIDeviceOrientationDidChangeNotification, object: nil)
+    }
+    
+    func didDeviceRotateAnimated() {
+        didDeviceRotate(animated: true)
+    }
+    
+    func didDeviceRotate(animated: Bool = true) {
+        let orientation = UIDevice.currentDevice().orientation
+        let menuWidth: CGFloat = 90.0 //Main menu bar width/height = 90pt
+        //println(histogramView.frame)
+        //For histogram width and height. rotation will swap it's dimension
+        var width = histogramView.frame.width
+        var height = histogramView.frame.height
+        if height > width {
+            width = histogramView.frame.height
+            height = histogramView.frame.width
+        }
+        //histogramView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        
+        if orientation == .Portrait || orientation == .PortraitUpsideDown {
+            //portrait
+            setTextRotation(90.0)
+            //bottom left
+            //previewView height = 320pt
+            setHistogramCenter(height / 2.0 + 10.0, y: previewView.frame.height - width / 2.0 - 10.0, animated: animated)
+            //Strange rotatoin is going on
+        } else if orientation == .LandscapeLeft {
+            //Landscape
+            setTextRotation(180.0)
+            setHistogramCenter(width / 2.0 + 10.0, y: previewView.frame.height - height / 2.0 - 10.0, animated: animated)
+        } else if orientation == .LandscapeRight {
+            setTextRotation(0.0)
+            setHistogramCenter(width / 2.0 + 10.0, y: previewView.frame.height - height / 2.0 - 10.0, animated: animated)
+        } else {
+            println("unknown orientation \(orientation)")
+            //set histogram initial state
+            self.histogramView.transform = CGAffineTransformIdentity
+            setHistogramCenter(width / 2.0 + 10.0, y: previewView.frame.height - height / 2.0 - 10.0, animated: animated)
+        }
+    }
+    
+    func setTextRotation(rotation: CGFloat) {
+        let transform = CGAffineTransformMakeRotation(rotation * CGFloat(M_PI) / 180.0)
+        UIView.animateWithDuration(0.5, animations: { () -> Void in
+            self.asmButton.transform = transform
+            self.evContainer.transform = transform
+            self.isoContainer.transform = transform
+            self.shutterContainer.transform = transform
+            self.wbContainer.transform = transform
+            self.histogramView.transform = transform
+        })
+    }
+    
+    func setHistogramCenter(x: CGFloat, y: CGFloat, animated: Bool) {
+        if animated {
+            UIView.animateWithDuration(0.5, animations: { () -> Void in
+                self.histogramView.center.y = y
+                self.histogramView.center.x = x
+            })
+        } else {
+            self.histogramView.center.y = y
+            self.histogramView.center.x = x
+        }
+        
+        println("histogram new center= \(x), \(y)")
+    }
+    
+    func showHistogramView() {
+        histogramView.hidden = false
+    }
+    
+    override func prefersStatusBarHidden() -> Bool {
+        return true
     }
     
     func settingsUpdated(settingsVal: [String: Bool]!) {
@@ -128,6 +204,21 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         histogramView.opaque = false
         histogramView.backgroundColor = UIColor.clearColor()
         scrollView.delegate = self
+        println("viewWilAppear")
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        histogramView.hidden = true
+        println("viewWillDisappear")
+    }
+    
+    override func viewWillLayoutSubviews() {
+        println("viewWillLayoutSubviews")
+        if viewDidAppeared {
+            didDeviceRotate(animated: false)
+            histogramView.hidden = false
+            println("set didDeviceRotate")
+        }
     }
     
     override func postInitilize() {
@@ -159,6 +250,10 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
         if super.initialized {
             initView()
         }
+        
+        viewDidAppeared = true
+        //NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "showHistogramView", userInfo: nil, repeats: false)
+        println("view did appear")
     }
     
     override func didReceiveMemoryWarning() {
@@ -176,7 +271,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     @IBAction func didZoom(sender: UIPinchGestureRecognizer) {
         var scale = sender.scale
-        println(scale)
+        
         //TODO: Detect all touches are in preview layer
         if sender.state == UIGestureRecognizerState.Began {
             
@@ -191,65 +286,27 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     func toggleISO(enabled: Bool) {
         if enabled {
             isoValueLabel.textColor = enabledLabelColor
-            isoSlider.hidden = false
         } else {
             isoValueLabel.textColor = disabledLabelColor
-            isoSlider.hidden = true
         }
-        //hack force hidden
-        isoSlider.hidden = true
     }
     
     func toggleExposureDuration(enabled: Bool) {
         if enabled {
             shutterSpeedLabel.textColor = enabledLabelColor
-            exposureDurationSlider.hidden = false
         } else {
             shutterSpeedLabel.textColor = disabledLabelColor
-            exposureDurationSlider.hidden = true
         }
-        //hack force hidden
-        exposureDurationSlider.hidden = true
     }
     
     func toggleExposureValue(enabled: Bool) {
         if enabled {
             evValue.textColor = enabledLabelColor
-            exposureValueSlider.hidden = false
         } else {
             evValue.textColor = disabledLabelColor
-            exposureValueSlider.hidden = true
         }
-        //hack force hidden
-        exposureValueSlider.hidden = true
     }
     
-    func toggleWhiteBalance(enabled: Bool) {
-        if enabled {
-            whiteBalanceSlider.hidden = false
-        } else {
-            whiteBalanceSlider.hidden = true
-        }
-        //hack force hidden
-        whiteBalanceSlider.hidden = true
-    }
-    
-    @IBAction func didPressFlash(sender: UIButton) {
-        if flashOn {
-            toggleFlashUI(false)
-        } else {
-            toggleFlashUI(true)
-        }
-        setFlashMode(!flashOn)
-    }
-    
-    func toggleFlashUI(on: Bool) {
-        if on {
-            flashBtn.setImage(UIImage(named: "flash"), forState: .Normal)
-        } else {
-            flashBtn.setImage(UIImage(named: "no-flash"), forState: .Normal)
-        }
-    }
     
     func updateASM() {
         var buttonTitle = "A"
@@ -575,6 +632,7 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        println("prepareForSegue")
         if segue.identifier == "cameraRollSegue" {
             let vcNav = segue.destinationViewController as? UINavigationController
             if vcNav != nil {
@@ -585,6 +643,8 @@ class MainViewController: AVCoreViewController, UIScrollViewDelegate {
             }
             
         }
+        histogramView.hidden = true
+        viewDidAppeared = false
     }
 }
 
